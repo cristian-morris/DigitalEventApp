@@ -18,7 +18,7 @@ class _EventPageState extends State<EventPage> {
         centerTitle: true,
       ),
       body: Center(
-        child: Text("Eventos"),
+        child: Text("Eventoschalo"),
       ),
     );
   }
