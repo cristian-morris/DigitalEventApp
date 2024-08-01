@@ -22,10 +22,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   final List <Widget> _pages = [
-    EventPage(),
+    EventosPage(),
     RecentEventPage(),
     NotificationPage(),
-    User(),
+    PerfilVer()
   ];
 
   @override
