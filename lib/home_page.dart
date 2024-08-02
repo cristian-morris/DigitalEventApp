@@ -54,15 +54,15 @@ class _HomePageState extends State<HomePage> {
                   text: 'Eventos',
                 ),
                 GButton(
-                  icon: Icons.home,
+                  icon: Icons.autorenew_rounded,
                   text: 'Recientes',
                 ),
                 GButton(
-                  icon: Icons.home,
+                  icon: Icons.notifications,
                   text: 'Noticaiones',
                 ),
                 GButton(
-                  icon: Icons.home,
+                  icon: Icons.person,
                   text: 'Perfil',
                 ),
               ],
