@@ -1,7 +1,8 @@
- import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
+import 'search_page.dart';
 
 class Evento {
   final int eventoId;
@@ -57,7 +58,8 @@ class Evento {
 }
 
 Future<List<Evento>> fetchEventos() async {
-  final response = await http.get(Uri.parse('https://api-digitalevent.onrender.com/api/eventos/events'));
+  final response = await http.get(
+      Uri.parse('https://api-digitalevent.onrender.com/api/eventos/events'));
 
   if (response.statusCode == 200) {
     List jsonResponse = json.decode(response.body);
@@ -81,6 +83,13 @@ class _EventosPageState extends State<EventosPage> {
     futureEventos = fetchEventos();
   }
 
+  void _navigateToSearchPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SearchPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,6 +107,8 @@ class _EventosPageState extends State<EventosPage> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: TextField(
+                  onTap: _navigateToSearchPage,
+                  readOnly: true,
                   decoration: InputDecoration(
                     hintText: 'Buscar',
                     border: InputBorder.none,
@@ -126,7 +137,9 @@ class _EventosPageState extends State<EventosPage> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Eventos Públicos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text('Eventos Públicos',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                   CarouselSlider(
                     options: CarouselOptions(
@@ -151,7 +164,9 @@ class _EventosPageState extends State<EventosPage> {
                   ),
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Eventos Privados', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text('Eventos Privados',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                   CarouselSlider(
                     options: CarouselOptions(
@@ -200,7 +215,8 @@ class EventoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(evento.imagenUrl, height: 100, width: double.infinity, fit: BoxFit.cover),
+            Image.network(evento.imagenUrl,
+                height: 100, width: double.infinity, fit: BoxFit.cover),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
