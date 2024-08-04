@@ -1,9 +1,77 @@
 // event_detail_page.dart
+import 'dart:convert';
 import 'package:digitalevent/models/evento.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class EventDetailPage extends StatelessWidget {
+
+   Future<String> createPaymentIntent(int amount, String currency) async {
+    try {
+      final body = jsonEncode({
+        'amount': amount,
+        'currency': currency,
+      });
+      final response = await http.post(
+        Uri.https('api-digitalevent.onrender.com', '/api/pagos/pago'), // Asegúrate de usar tu URL correcta
+        body: body,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final paymentIntentData = jsonDecode(response.body);
+        final clientSecret = paymentIntentData['client_secret'] as String;
+        print(clientSecret); // Asegúrate de que este print sea solo para depuración
+        return clientSecret;
+      } else {
+        throw Exception('Failed to create payment intent');
+      }
+    } catch (err) {
+      if (kDebugMode) {
+        print(err);
+      }
+      throw Exception('Failed to create payment intent');
+    }
+  }
+
+  Future<void> makePayment(BuildContext context) async {
+    try {
+      final paymentIntentClientSecret = await createPaymentIntent(5000, 'USD');
+
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentClientSecret,
+          style: ThemeMode.light,
+          merchantDisplayName: 'ejemplo'
+        ),
+      );
+
+      await displayPaymentSheet(context);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  Future<void> displayPaymentSheet(BuildContext context) async {
+    try {
+      await Stripe.instance.presentPaymentSheet().then((value) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Pago exitoso")));
+      }).onError((error, stackTrace) {
+        throw Exception(error);
+      });
+    } on StripeException catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
   final Evento evento;
 
   EventDetailPage({required this.evento});
@@ -14,9 +82,10 @@ class EventDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(evento.nombreEvento),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(evento.imagenUrl,
@@ -39,9 +108,14 @@ class EventDetailPage extends StatelessWidget {
             Text('Estado: ${evento.estado}'),
             Text(
                 'Fecha de Autorización: ${DateFormat('yyyy-MM-dd').format(evento.fechaAutorizacion)}'),
-            // Agrega más detalles según sea necesario.
+            ElevatedButton(
+              onPressed: () => makePayment(context),
+              child: Text("Comprar Boleto"),
+            )
           ],
         ),
+          )
+        ],
       ),
     );
   }
