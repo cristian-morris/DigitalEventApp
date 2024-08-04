@@ -1,61 +1,12 @@
 import 'dart:convert';
+import 'package:digitalevent/models/evento.dart';
+import 'package:digitalevent/pages/event_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'search_page.dart';
 
-class Evento {
-  final int eventoId;
-  final String nombreEvento;
-  final DateTime fechaInicio;
-  final DateTime fechaTermino;
-  final String hora;
-  final String ubicacion;
-  final int maxPer;
-  final String estado;
-  final DateTime fechaAutorizacion;
-  final String tipoEvento;
-  final String organizadorNombre;
-  final String autorizadoNombre;
-  final String categoriaNombre;
-  final String imagenUrl;
 
-  Evento({
-    required this.eventoId,
-    required this.nombreEvento,
-    required this.fechaInicio,
-    required this.fechaTermino,
-    required this.hora,
-    required this.ubicacion,
-    required this.maxPer,
-    required this.estado,
-    required this.fechaAutorizacion,
-    required this.tipoEvento,
-    required this.organizadorNombre,
-    required this.autorizadoNombre,
-    required this.categoriaNombre,
-    required this.imagenUrl,
-  });
-
-  factory Evento.fromJson(Map<String, dynamic> json) {
-    return Evento(
-      eventoId: json['evento_id'],
-      nombreEvento: json['nombre_evento'],
-      fechaInicio: DateTime.parse(json['fecha_inicio']),
-      fechaTermino: DateTime.parse(json['fecha_termino']),
-      hora: json['hora'],
-      ubicacion: json['ubicacion'],
-      maxPer: json['max_per'],
-      estado: json['estado'],
-      fechaAutorizacion: DateTime.parse(json['fecha_autorizacion']),
-      tipoEvento: json['tipo_evento'],
-      organizadorNombre: json['organizador_nombre'],
-      autorizadoNombre: json['autorizado_nombre'],
-      categoriaNombre: json['categoria_nombre'],
-      imagenUrl: json['imagen_url'],
-    );
-  }
-}
 
 Future<List<Evento>> fetchEventos() async {
   final response = await http.get(
@@ -206,39 +157,53 @@ class EventoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.network(evento.imagenUrl,
-                height: 100, width: double.infinity, fit: BoxFit.cover),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                evento.nombreEvento,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailPage(evento: evento),
+          ),
+        );
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.network(
+                evento.imagenUrl,
+                height: 100,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                '${evento.fechaInicio.toLocal()}'.split(' ')[0],
-                style: TextStyle(color: Colors.grey),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  evento.nombreEvento,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                evento.ubicacion,
-                style: TextStyle(color: Colors.grey),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  '${evento.fechaInicio.toLocal()}'.split(' ')[0],
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  evento.ubicacion,
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
