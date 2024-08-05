@@ -6,8 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'search_page.dart';
 
-
-
 Future<List<Evento>> fetchEventos() async {
   final response = await http.get(
       Uri.parse('https://api-digitalevent.onrender.com/api/eventos/events'));

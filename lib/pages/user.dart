@@ -1,3 +1,4 @@
+import 'package:digitalevent/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -50,7 +51,8 @@ class _PerfilVerState extends State<PerfilVer> {
   }
 
   Future<void> fetchUsuario() async {
-    final response = await http.get(Uri.parse('https://api-digitalevent.onrender.com/api/users/3')); // Cambia el ID según sea necesario
+    final response = await http.get(Uri.parse(
+        'https://api-digitalevent.onrender.com/api/users/3')); // Cambia el ID según sea necesario
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -85,7 +87,8 @@ class _PerfilVerState extends State<PerfilVer> {
               if (_usuario != null) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PerfilEditar(usuario: _usuario!)),
+                  MaterialPageRoute(
+                      builder: (context) => PerfilEditar(usuario: _usuario!)),
                 );
               }
             },
@@ -104,9 +107,13 @@ class _PerfilVerState extends State<PerfilVer> {
                     children: [
                       CircleAvatar(
                         radius: 40.0,
-                        backgroundImage: (_usuario!.fotoPerfil.isNotEmpty && Uri.tryParse(_usuario!.fotoPerfil)?.hasAbsolutePath == true)
+                        backgroundImage: (_usuario!.fotoPerfil.isNotEmpty &&
+                                Uri.tryParse(_usuario!.fotoPerfil)
+                                        ?.hasAbsolutePath ==
+                                    true)
                             ? NetworkImage(_usuario!.fotoPerfil)
-                            : AssetImage('assets/images/R.png') as ImageProvider,
+                            : AssetImage('assets/images/R.png')
+                                as ImageProvider,
                         backgroundColor: Colors.grey,
                       ),
                       SizedBox(height: 10.0),
@@ -131,7 +138,8 @@ class _PerfilVerState extends State<PerfilVer> {
                           tileColor: Colors.purple,
                         ),
                         ListTile(
-                          leading: Icon(Icons.person_outline, color: Colors.black),
+                          leading:
+                              Icon(Icons.person_outline, color: Colors.black),
                           title: Text('Apellido: ${_usuario!.lastName}'),
                           tileColor: Colors.purple,
                         ),
@@ -145,7 +153,6 @@ class _PerfilVerState extends State<PerfilVer> {
                           title: Text('Teléfono: ${_usuario!.telefono}'),
                           tileColor: Colors.purple,
                         ),
-                        
                         ListTile(
                           title: Text('Historial de pagos'),
                           trailing: Icon(Icons.history, color: Colors.black),
@@ -154,7 +161,6 @@ class _PerfilVerState extends State<PerfilVer> {
                             // Navegar a la política de privacidad
                           },
                         ),
-                        
                         ListTile(
                           title: Text('Política de privacidad'),
                           trailing: Icon(Icons.policy, color: Colors.black),
@@ -173,10 +179,16 @@ class _PerfilVerState extends State<PerfilVer> {
                         ),
                         ListTile(
                           title: Text('Cerrar sesión'),
-                          trailing: Icon(Icons.exit_to_app, color: Colors.black),
+                          trailing:
+                              Icon(Icons.exit_to_app, color: Colors.black),
                           tileColor: Colors.purple,
                           onTap: () {
-                            // Manejar cierre de sesión
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
+                              ),
+                            );
                           },
                         ),
                       ],
@@ -225,14 +237,16 @@ class _PerfilEditarState extends State<PerfilEditar> {
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
-        _fotoPerfil = pickedFile.path; // Puedes subir el archivo o usarlo localmente
+        _fotoPerfil =
+            pickedFile.path; // Puedes subir el archivo o usarlo localmente
       });
     }
   }
 
   Future<void> _actualizarUsuario() async {
     final response = await http.put(
-      Uri.parse('https://api-digitalevent.onrender.com/api/users/${widget.usuario.usuarioId}'),
+      Uri.parse(
+          'https://api-digitalevent.onrender.com/api/users/${widget.usuario.usuarioId}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -254,7 +268,8 @@ class _PerfilEditarState extends State<PerfilEditar> {
         widget.usuario.telefono = data['telefono'] ?? '';
         widget.usuario.fotoPerfil = data['fotoPerfil'] ?? '';
       });
-      Navigator.pop(context, true); // Retorna true para indicar que se actualizaron los datos
+      Navigator.pop(context,
+          true); // Retorna true para indicar que se actualizaron los datos
     } else {
       print('Failed to update user. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -290,16 +305,20 @@ class _PerfilEditarState extends State<PerfilEditar> {
                       radius: 60.0,
                       backgroundImage: _imageFile != null
                           ? FileImage(_imageFile!)
-                          : (_fotoPerfil.isNotEmpty && Uri.tryParse(_fotoPerfil)?.hasAbsolutePath == true)
+                          : (_fotoPerfil.isNotEmpty &&
+                                  Uri.tryParse(_fotoPerfil)?.hasAbsolutePath ==
+                                      true)
                               ? NetworkImage(_fotoPerfil)
-                              : AssetImage('assets/images/R.png') as ImageProvider,
+                              : AssetImage('assets/images/R.png')
+                                  as ImageProvider,
                       backgroundColor: Colors.grey,
                     ),
                     Positioned(
                       bottom: 0,
                       right: 0,
                       child: IconButton(
-                        icon: Icon(Icons.camera_alt, color: Colors.white, size: 30),
+                        icon: Icon(Icons.camera_alt,
+                            color: Colors.white, size: 30),
                         onPressed: _pickImage,
                         color: Colors.black.withOpacity(0.5),
                       ),
@@ -369,10 +388,13 @@ class _PerfilEditarState extends State<PerfilEditar> {
                 },
                 child: Text(
                   'Guardar Cambios',
-                  style: TextStyle(color: Colors.white), // Cambia el color del texto a blanco
+                  style: TextStyle(
+                      color:
+                          Colors.white), // Cambia el color del texto a blanco
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple[300], // Cambia el color de fondo del botón si es necesario
+                  backgroundColor: Colors.deepPurple[
+                      300], // Cambia el color de fondo del botón si es necesario
                 ),
               ),
             ],

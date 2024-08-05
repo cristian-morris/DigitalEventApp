@@ -1,4 +1,3 @@
-// lib/models/evento.dart
 class Evento {
   final int eventoId;
   final String nombreEvento;

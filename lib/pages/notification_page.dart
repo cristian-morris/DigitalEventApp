@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,16 +8,12 @@ class Notificacion {
   final String mensaje;
   final String fechaenvio;
 
-
- Notificacion({
+  Notificacion({
     required this.notificacionid,
     required this.usuarioid,
     required this.mensaje,
     required this.fechaenvio,
- });
-
-
-
+  });
 }
 
 class NotificationPage extends StatefulWidget {
@@ -29,24 +24,29 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
- late Future<List<Notificacion>> _notificacionesFuture; // Futuro para almacenar la lista de pagos
+  late Future<List<Notificacion>>
+      _notificacionesFuture; // Futuro para almacenar la lista de pagos
 
   @override
   void initState() {
     super.initState();
-    _notificacionesFuture = _getNoti(); // Inicializa el futuro con la función que obtiene los pagos
+    _notificacionesFuture =
+        _getNoti(); // Inicializa el futuro con la función que obtiene los pagos
   }
 
   Future<List<Notificacion>> _getNoti() async {
-    var response = await http.get(Uri.https('api-digitalevent.onrender.com', '/api/notification/getAll')); 
+    var response = await http.get(
+        Uri.https('api-digitalevent.onrender.com', '/api/notification/getAll'));
     var jsonData = jsonDecode(response.body) as List<dynamic>;
 
-    List<Notificacion> notificaciones = jsonData.map((json) => Notificacion(
-      notificacionid: json['notificacion_id'],
-      usuarioid: json['usuario_id'],
-      mensaje: json['mensaje'],
-      fechaenvio: json['fecha_envio'],
-    )).toList();
+    List<Notificacion> notificaciones = jsonData
+        .map((json) => Notificacion(
+              notificacionid: json['notificacion_id'],
+              usuarioid: json['usuario_id'],
+              mensaje: json['mensaje'],
+              fechaenvio: json['fecha_envio'],
+            ))
+        .toList();
 
     return notificaciones;
   }
@@ -54,13 +54,16 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.deepPurple[300],
         elevation: 0,
-        title: Text("Digital Event", textAlign: TextAlign.center,),
+        title: Text(
+          "Digital Event",
+          textAlign: TextAlign.center,
+        ),
         centerTitle: true,
       ),
-     body: FutureBuilder<List<Notificacion>>(
+      body: FutureBuilder<List<Notificacion>>(
         future: _notificacionesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -85,9 +88,11 @@ class _NotificationPageState extends State<NotificationPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Notificacion id: ${notificaciones[index].notificacionid}"),
+                          Text(
+                              "Notificacion id: ${notificaciones[index].notificacionid}"),
                           SizedBox(height: 8),
-                          Text("usuario id: ${notificaciones[index].usuarioid}"),
+                          Text(
+                              "usuario id: ${notificaciones[index].usuarioid}"),
                           SizedBox(height: 8),
                           Text("Descripcion: ${notificaciones[index].mensaje}"),
                           SizedBox(height: 8),
