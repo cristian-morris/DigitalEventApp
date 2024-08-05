@@ -158,7 +158,12 @@ class _PerfilVerState extends State<PerfilVer> {
                           trailing: Icon(Icons.history, color: Colors.black),
                           tileColor: Colors.purple,
                           onTap: () {
-                            // Navegar a la política de privacidad
+                           Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => historialPago(),
+                              ),
+                            );
                           },
                         ),
                         ListTile(
