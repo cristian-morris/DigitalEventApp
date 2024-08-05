@@ -45,12 +45,17 @@ class _RegisterState extends State<Register> {
     final responseData = jsonDecode(response.body);
 
     if (response.statusCode == 201 || responseData['message'] == 'User created successfully') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-      );
+       ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Registrado, por favor ve a login")));
+             // Limpiar los campos del formulario
+        nameController.clear();
+        emailController.clear();
+        passwordController.clear();
+        lastNameController.clear();
+        phoneController.clear();
+        setState(() {
+          selectedRole = null;
+        });
     } else {
       showDialog(
         context: context,
@@ -397,7 +402,7 @@ class _RegisterState extends State<Register> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const LoginPage()));
+                                builder: (context) =>  LoginPage()));
                           },
                           child: Text(
                             'Inicia Sesión',

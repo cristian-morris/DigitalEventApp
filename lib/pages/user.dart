@@ -1,10 +1,12 @@
 import 'package:digitalevent/Login.dart';
+import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/pages/historial_pago.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io'; // Para usar File
-import 'package:image_picker/image_picker.dart'; // Para elegir imágenes
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart'; // Para elegir imágenes
 
 class Usuario {
   final int usuarioId;
@@ -70,6 +72,7 @@ class _PerfilVerState extends State<PerfilVer> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple[300],
@@ -189,12 +192,7 @@ class _PerfilVerState extends State<PerfilVer> {
                               Icon(Icons.exit_to_app, color: Colors.black),
                           tileColor: Colors.purple,
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
-                              ),
-                            );
+                            authProvider.logout();
                           },
                         ),
                       ],
