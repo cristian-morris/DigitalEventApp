@@ -113,11 +113,12 @@ class _LoginPageState extends State<LoginPage> {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => HomePage(),
-                              )); //
+                             MaterialPageRoute(
+                             builder: (context) => HomePage(),
+                             ),
+                               );
                         },
                         style: const ButtonStyle(
                           shape: WidgetStatePropertyAll<OutlinedBorder>(
