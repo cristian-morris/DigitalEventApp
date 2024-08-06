@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<AuthProvider>(
         builder: (ctx, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
           home: auth.isAuth ? HomePage() : LoginPage(),
         ),
       ),

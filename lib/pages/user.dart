@@ -1,4 +1,3 @@
-import 'package:digitalevent/Login.dart';
 import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/pages/historial_pago.dart';
 import 'package:flutter/material.dart';

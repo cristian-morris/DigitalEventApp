@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:digitalevent/models/evento.dart';
 import 'package:digitalevent/pages/event_detail_page.dart';
+import 'package:digitalevent/pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
-import 'search_page.dart';
 
 Future<List<Evento>> fetchEventos() async {
   final response = await http.get(
@@ -43,30 +43,37 @@ class _EventosPageState extends State<EventosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple[400],
-        title: Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: 40,
-                margin: EdgeInsets.symmetric(horizontal: 8.0),
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  onTap: _navigateToSearchPage,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar',
-                    border: InputBorder.none,
-                    icon: Icon(Icons.search),
-                  ),
-                ),
-              ),
+        title: GestureDetector(
+          onTap: _navigateToSearchPage,
+          child: Container(
+            height: 40,
+            margin: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25.0),
             ),
-          ],
+            child: const Row(
+              children: [
+                Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 8),
+                Text(
+                  'Buscar eventos...',
+                  style: TextStyle(
+                      color: Color.fromARGB(255, 75, 74, 74), fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purple, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
         ),
       ),
       body: FutureBuilder<List<Evento>>(
@@ -84,15 +91,27 @@ class _EventosPageState extends State<EventosPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
+                   const Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Eventos Públicos',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Eventos Públicos',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10.0,
+                            color: Colors.black26,
+                            offset: Offset(2.0, 2.0),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   CarouselSlider(
                     options: CarouselOptions(
-                      height: 250.0,
+                      height: 300.0,
                       enlargeCenterPage: true,
                       aspectRatio: 16 / 9,
                       enableInfiniteScroll: true,
@@ -104,22 +123,35 @@ class _EventosPageState extends State<EventosPage> {
                       return Builder(
                         builder: (BuildContext context) {
                           return SizedBox(
-                            height: 250,
+                            height: 300,
                             child: EventoCard(evento: event),
                           );
                         },
                       );
                     }).toList(),
                   ),
-                  Padding(
+                  const SizedBox(height: 10),
+                  const Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Eventos Privados',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Eventos Privados',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10.0,
+                            color: Colors.black26,
+                            offset: Offset(2.0, 2.0),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   CarouselSlider(
                     options: CarouselOptions(
-                      height: 250.0,
+                      height: 300.0,
                       enlargeCenterPage: true,
                       aspectRatio: 16 / 9,
                       enableInfiniteScroll: true,
@@ -131,13 +163,14 @@ class _EventosPageState extends State<EventosPage> {
                       return Builder(
                         builder: (BuildContext context) {
                           return SizedBox(
-                            height: 250,
+                            height: 300,
                             child: EventoCard(evento: event),
                           );
                         },
                       );
                     }).toList(),
                   ),
+                  const SizedBox(height: 10),
                 ],
               ),
             );
@@ -168,36 +201,89 @@ class EventoCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
+        elevation: 5,
+        shadowColor: Colors.black38,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network(
-                evento.imagenUrl,
-                height: 100,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              Stack(
+                children: [
+                  Image.network(
+                    evento.imagenUrl,
+                    height: 145,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    bottom: 20,
+                    right: 170,
+                    left: 0,
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                      decoration: BoxDecoration(
+                        color: Colors.purple,
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.zero,
+                          right: Radius.elliptical(110.0, 20.0),
+                        ),
+                      ),
+                      child: Text(
+                        evento.categoriaNombre,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.black26,
+                              offset: Offset(2.0, 2.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
                   evento.nombreEvento,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  '${evento.fechaInicio.toLocal()}'.split(' ')[0],
-                  style: TextStyle(color: Colors.grey),
+                child: Row(
+                  children: [
+                    Icon(Icons.date_range, size: 16, color: Colors.grey),
+                    SizedBox(width: 4),
+                    Text(
+                      '${evento.fechaInicio.toLocal()}'.split(' ')[0],
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ],
                 ),
               ),
               Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Text(
-                  evento.ubicacion,
-                  style: TextStyle(color: Colors.grey),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on, size: 16, color: Colors.grey),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        evento.ubicacion,
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
