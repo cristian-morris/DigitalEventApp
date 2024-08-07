@@ -1,47 +1,10 @@
 import 'dart:convert';
-
+import 'package:digitalevent/models/evento.dart';
+import 'package:digitalevent/pages/event_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-// lib/models/evento.dart
-class Evento {
-  final int eventoId;
-  final String nombreEvento;
-  final DateTime fechaInicio;
-  final DateTime fechaTermino;
-  final String hora;
-  final String ubicacion;
-  final int maxPer;
-  final String estado;
-  final DateTime fechaAutorizacion;
-  final String tipoEvento;
-  final String organizadorNombre;
-  final String autorizadoNombre;
-  final String categoriaNombre;
-  final String imagenUrl;
-
-  Evento({
-    required this.eventoId,
-    required this.nombreEvento,
-    required this.fechaInicio,
-    required this.fechaTermino,
-    required this.hora,
-    required this.ubicacion,
-    required this.maxPer,
-    required this.estado,
-    required this.fechaAutorizacion,
-    required this.tipoEvento,
-    required this.organizadorNombre,
-    required this.autorizadoNombre,
-    required this.categoriaNombre,
-    required this.imagenUrl,
-  });
-
-  
-}
-
 class RecentEventPage extends StatefulWidget {
-  
   const RecentEventPage({super.key});
 
   @override
@@ -49,86 +12,208 @@ class RecentEventPage extends StatefulWidget {
 }
 
 class _RecentEventPageState extends State<RecentEventPage> {
-late Future<List<Evento>> _notificacionesFuture; // Futuro para almacenar la lista de pagos
+  late Future<List<Evento>> _eventosFuture;
 
   @override
   void initState() {
     super.initState();
-    _notificacionesFuture = _getNoti(); // Inicializa el futuro con la función que obtiene los pagos
+    _eventosFuture = _getEventos();
   }
 
-  Future<List<Evento>> _getNoti() async {
-    var response = await http.get(Uri.https('api-digitalevent.onrender.com', '/api/eventos/events')); 
+  Future<List<Evento>> _getEventos() async {
+    var response = await http.get(
+      Uri.https('api-digitalevent.onrender.com', '/api/eventos/events'),
+    );
     var jsonData = jsonDecode(response.body) as List<dynamic>;
 
-    List<Evento> notificaciones = jsonData.map((json) => Evento(
-      eventoId: json['evento_id'],
-      nombreEvento: json['nombre_evento'],
-      fechaInicio: DateTime.parse(json['fecha_inicio']),
-      fechaTermino: DateTime.parse(json['fecha_termino']),
-      hora: json['hora'],
-      ubicacion: json['ubicacion'],
-      maxPer: json['max_per'],
-      estado: json['estado'],
-      fechaAutorizacion: DateTime.parse(json['fecha_autorizacion']),
-      tipoEvento: json['tipo_evento'],
-      organizadorNombre: json['organizador_nombre'],
-      autorizadoNombre: json['autorizado_nombre'],
-      categoriaNombre: json['categoria_nombre'],
-      imagenUrl: json['imagen_url'],
-    )).toList();
+    List<Evento> eventos =
+        jsonData.map((json) => Evento.fromJson(json)).toList();
 
-    return notificaciones;
-  }  
+    return eventos;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-        backgroundColor: Colors.deepPurple[300],
-        elevation: 0,
-        title: Text("Digital Event", textAlign: TextAlign.center,),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          "Eventos Recientes",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purple, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: FutureBuilder<List<Evento>>(
-        future: _notificacionesFuture,
+        future: _eventosFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error al cargar los datos'));
+            return const Center(child: Text('Error al cargar los datos'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay datos disponibles'));
+            return const Center(child: Text('No hay eventos disponibles'));
           } else {
-            // Datos disponibles
-            List<Evento> notificaciones = snapshot.data!;
+            List<Evento> eventos = snapshot.data!;
 
             return ListView.builder(
-              itemCount: notificaciones.length,
+              itemCount: eventos.length,
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Image.network(
-                        notificaciones[index].imagenUrl,
-                         height: 100,
-                         width: double.infinity,
-                          fit: BoxFit.cover,
-                          ),
-                          Text("Notificacion id: ${notificaciones[index].nombreEvento}"),
-                          SizedBox(height: 8),
-                          Text("usuario id: ${notificaciones[index].categoriaNombre}"),
-                          SizedBox(height: 8),
-                          Text("Descripcion: ${notificaciones[index].estado}"),
-                          SizedBox(height: 8),
-                          Text("fecha: ${notificaciones[index].maxPer}"),
-                        ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EventDetailPage(evento: eventos[index]),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      elevation: 5,
+                      shadowColor: Colors.black38,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Stack(
+                              children: [
+                                Image.network(
+                                  eventos[index].imagenUrl,
+                                  height: 200,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0,
+                                      vertical: 4.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.purple,
+                                      borderRadius: BorderRadius.circular(15.0),
+                                    ),
+                                    child: Text(
+                                      eventos[index].categoriaNombre,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 10.0,
+                                            color: Colors.black26,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                eventos[index].nombreEvento,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.date_range,
+                                      size: 16, color: Colors.grey),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${eventos[index].fechaInicio.toLocal()}'
+                                        .split(' ')[0],
+                                    style: const TextStyle(
+                                        color: Colors.grey, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.location_on,
+                                      size: 16, color: Colors.grey),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      eventos[index].ubicacion,
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 14),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: eventos[index].estado == 'Aprobado'
+                                          ? Colors.green
+                                          : Colors.red,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 4.0),
+                                    child: Text(
+                                      eventos[index].estado,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 14),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 18),
+                                  Expanded(
+                                    child: Text(
+                                      'Max. Personas: ${eventos[index].maxPer}',
+                                      style: const TextStyle(fontSize: 14),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                        ),
                       ),
                     ),
                   ),

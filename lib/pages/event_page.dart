@@ -43,6 +43,7 @@ class _EventosPageState extends State<EventosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: GestureDetector(
           onTap: _navigateToSearchPage,
           child: Container(
@@ -91,7 +92,7 @@ class _EventosPageState extends State<EventosPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   const Padding(
+                  const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Eventos Públicos',

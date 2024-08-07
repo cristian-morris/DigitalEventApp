@@ -83,10 +83,16 @@ class _PerfilEditarState extends State<PerfilEditar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Editar Perfil", style: TextStyle(color: Colors.white)),
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          "Editar Perfil",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 Colors.deepPurple,
@@ -161,7 +167,7 @@ class _PerfilEditarState extends State<PerfilEditar> {
                   _nombre = value;
                 },
               ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 15.0),
               _buildTextFormField(
                 'Apellido',
                 _lastName,
@@ -175,7 +181,7 @@ class _PerfilEditarState extends State<PerfilEditar> {
                   _lastName = value;
                 },
               ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 15.0),
               _buildTextFormField(
                 'Correo Electrónico',
                 _email,
@@ -189,7 +195,7 @@ class _PerfilEditarState extends State<PerfilEditar> {
                   _email = value;
                 },
               ),
-              SizedBox(height: 10.0),
+              SizedBox(height: 15.0),
               _buildTextFormField(
                 'Teléfono',
                 _telefono,
@@ -204,21 +210,38 @@ class _PerfilEditarState extends State<PerfilEditar> {
                 },
               ),
               SizedBox(height: 20.0),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _actualizarUsuario();
-                    }
-                  },
-                  child: Text('Guardar Cambios',
-                      style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+              Center(
+                child: AnimatedContainer(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Colors.purple,
+                        Colors.deepPurple,
+                        Colors.purpleAccent
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  duration: Duration(milliseconds: 300),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _actualizarUsuario();
+                      }
+                    },
+                    child: Text('Guardar Cambios',
+                        style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 18.0,
+                        vertical: 15.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
