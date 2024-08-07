@@ -1,11 +1,10 @@
 import 'package:digitalevent/auth_provider.dart';
+import 'package:digitalevent/pages/edit_profile.dart';
 import 'package:digitalevent/pages/historial_pago.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io'; // Para usar File
-import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart'; // Para elegir imágenes
+import 'package:provider/provider.dart';
 
 class Usuario {
   final int usuarioId;
@@ -45,6 +44,7 @@ class PerfilVer extends StatefulWidget {
 
 class _PerfilVerState extends State<PerfilVer> {
   Usuario? _usuario;
+  double _scrollOffset = 0;
 
   @override
   void initState() {
@@ -53,12 +53,12 @@ class _PerfilVerState extends State<PerfilVer> {
   }
 
   Future<void> fetchUsuario() async {
-    final response = await http.get(Uri.parse(
-        'https://api-digitalevent.onrender.com/api/users/3')); // Cambia el ID según sea necesario
+    final response = await http
+        .get(Uri.parse('https://api-digitalevent.onrender.com/api/users/3'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print(data); // Verifica la respuesta en la consola
+      print(data);
       setState(() {
         _usuario = Usuario.fromJson(data);
       });
@@ -73,337 +73,234 @@ class _PerfilVerState extends State<PerfilVer> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple[300],
-        title: Text(
-          "Perfil",
-          style: TextStyle(
-            color: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: _scrollOffset > 200
+                ? LinearGradient(
+                    colors: [
+                      Colors.deepPurple,
+                      Colors.purple,
+                      Colors.purpleAccent
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
           ),
-          textAlign: TextAlign.center,
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              if (_usuario != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PerfilEditar(usuario: _usuario!)),
-                );
-              }
-            },
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: AnimatedOpacity(
+          duration: Duration(milliseconds: 300),
+          opacity: _scrollOffset > 200 ? 1.0 : 0.0,
+          child: Text(
+            'Mi cuenta',
+            style: TextStyle(
+                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
           ),
-        ],
+        ),
       ),
       body: _usuario == null
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Container(
-                  color: Colors.deepPurple[300],
-                  width: double.infinity,
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 40.0,
-                        backgroundImage: (_usuario!.fotoPerfil.isNotEmpty &&
-                                Uri.tryParse(_usuario!.fotoPerfil)
-                                        ?.hasAbsolutePath ==
-                                    true)
-                            ? NetworkImage(_usuario!.fotoPerfil)
-                            : AssetImage('assets/images/R.png')
-                                as ImageProvider,
-                        backgroundColor: Colors.grey,
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        'Usuario: ${_usuario!.nombre} ${_usuario!.lastName}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                    child: ListView(
+          : NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                if (scrollNotification is ScrollUpdateNotification) {
+                  setState(() {
+                    _scrollOffset = scrollNotification.metrics.pixels;
+                  });
+                }
+                return true;
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Stack(
                       children: [
-                        ListTile(
-                          leading: Icon(Icons.person, color: Colors.black),
-                          title: Text('Nombre: ${_usuario!.nombre}'),
-                          tileColor: Colors.purple,
-                        ),
-                        ListTile(
-                          leading:
-                              Icon(Icons.person_outline, color: Colors.black),
-                          title: Text('Apellido: ${_usuario!.lastName}'),
-                          tileColor: Colors.purple,
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.email, color: Colors.black),
-                          title: Text('Gmail: ${_usuario!.email}'),
-                          tileColor: Colors.purple,
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.phone, color: Colors.black),
-                          title: Text('Teléfono: ${_usuario!.telefono}'),
-                          tileColor: Colors.purple,
-                        ),
-                        ListTile(
-                          title: Text('Historial de pagos'),
-                          trailing: Icon(Icons.history, color: Colors.black),
-                          tileColor: Colors.purple,
-                          onTap: () {
-                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => historialPago(),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.deepPurple,
+                                Colors.purple,
+                                Colors.purpleAccent
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          width: double.infinity,
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 70),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (_usuario != null) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PerfilEditar(
+                                                          usuario: _usuario!)),
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 110.0,
+                                          height: 110.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Colors.black,
+                                                width: 1.3),
+                                            image: DecorationImage(
+                                              image: (_usuario!.fotoPerfil
+                                                          .isNotEmpty &&
+                                                      Uri.tryParse(_usuario!
+                                                                  .fotoPerfil)
+                                                              ?.hasAbsolutePath ==
+                                                          true)
+                                                  ? NetworkImage(
+                                                      _usuario!.fotoPerfil)
+                                                  : AssetImage(
+                                                          'assets/images/R.png')
+                                                      as ImageProvider,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 0,
+                                        bottom: 0,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            if (_usuario != null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PerfilEditar(
+                                                            usuario:
+                                                                _usuario!)),
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            width: 30,
+                                            height: 30,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.black,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            child: Icon(
+                                              Icons.edit_outlined,
+                                              size: 15,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          title: Text('Política de privacidad'),
-                          trailing: Icon(Icons.policy, color: Colors.black),
-                          tileColor: Colors.purple,
-                          onTap: () {
-                            // Navegar a la política de privacidad
-                          },
-                        ),
-                        ListTile(
-                          title: Text('Centro de ayuda'),
-                          trailing: Icon(Icons.help, color: Colors.black),
-                          tileColor: Colors.purple,
-                          onTap: () {
-                            // Navegar al centro de ayuda
-                          },
-                        ),
-                        ListTile(
-                          title: Text('Cerrar sesión'),
-                          trailing:
-                              Icon(Icons.exit_to_app, color: Colors.black),
-                          tileColor: Colors.purple,
-                          onTap: () {
-                            authProvider.logout();
-                          },
+                              SizedBox(height: 10),
+                              Text(
+                                '${_usuario!.nombre} ${_usuario!.lastName}',
+                                style: TextStyle(
+                                    fontSize: 22.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-    );
-  }
-}
-
-class PerfilEditar extends StatefulWidget {
-  final Usuario usuario;
-
-  const PerfilEditar({super.key, required this.usuario});
-
-  @override
-  _PerfilEditarState createState() => _PerfilEditarState();
-}
-
-class _PerfilEditarState extends State<PerfilEditar> {
-  final _formKey = GlobalKey<FormState>();
-  late String _nombre;
-  late String _lastName;
-  late String _email;
-  late String _telefono;
-  late String _fotoPerfil;
-
-  final ImagePicker _picker = ImagePicker();
-  File? _imageFile;
-
-  @override
-  void initState() {
-    super.initState();
-    _nombre = widget.usuario.nombre;
-    _lastName = widget.usuario.lastName;
-    _email = widget.usuario.email;
-    _telefono = widget.usuario.telefono;
-    _fotoPerfil = widget.usuario.fotoPerfil;
-  }
-
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-        _fotoPerfil =
-            pickedFile.path; // Puedes subir el archivo o usarlo localmente
-      });
-    }
-  }
-
-  Future<void> _actualizarUsuario() async {
-    final response = await http.put(
-      Uri.parse(
-          'https://api-digitalevent.onrender.com/api/users/${widget.usuario.usuarioId}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'nombre': _nombre,
-        'last_name': _lastName,
-        'email': _email,
-        'telefono': _telefono,
-        'fotoPerfil': _fotoPerfil,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        widget.usuario.nombre = data['nombre'] ?? '';
-        widget.usuario.lastName = data['last_name'] ?? '';
-        widget.usuario.email = data['email'] ?? '';
-        widget.usuario.telefono = data['telefono'] ?? '';
-        widget.usuario.fotoPerfil = data['fotoPerfil'] ?? '';
-      });
-      Navigator.pop(context,
-          true); // Retorna true para indicar que se actualizaron los datos
-    } else {
-      print('Failed to update user. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      throw Exception('Failed to update user');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Editar Perfil",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.white, // Cambia el color de la flecha a blanco
-        ),
-        backgroundColor: Colors.deepPurple[300],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60.0,
-                      backgroundImage: _imageFile != null
-                          ? FileImage(_imageFile!)
-                          : (_fotoPerfil.isNotEmpty &&
-                                  Uri.tryParse(_fotoPerfil)?.hasAbsolutePath ==
-                                      true)
-                              ? NetworkImage(_fotoPerfil)
-                              : AssetImage('assets/images/R.png')
-                                  as ImageProvider,
-                      backgroundColor: Colors.grey,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: IconButton(
-                        icon: Icon(Icons.camera_alt,
-                            color: Colors.white, size: 30),
-                        onPressed: _pickImage,
-                        color: Colors.black.withOpacity(0.5),
+                    Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 20.0),
+                      child: Column(
+                        children: [
+                          _buildProfileInfoTile(
+                              Icons.person, 'Nombre', _usuario!.nombre),
+                          _buildProfileInfoTile(Icons.person_outline,
+                              'Apellido', _usuario!.lastName),
+                          _buildProfileInfoTile(Icons.email,
+                              'Correo Electrónico', _usuario!.email),
+                          _buildProfileInfoTile(
+                              Icons.phone, 'Teléfono', _usuario!.telefono),
+                          Divider(height: 20, thickness: 1),
+                          _buildProfileActionTile(context, Icons.history,
+                              'Historial de pagos', historialPago()),
+                          _buildProfileActionTile(context, Icons.policy,
+                              'Política de privacidad', null),
+                          _buildProfileActionTile(
+                              context, Icons.help, 'Centro de ayuda', null),
+                          _buildLogoutTile(context, authProvider),
+                          Divider(height: 20, thickness: 1),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20.0),
-              TextFormField(
-                initialValue: _nombre,
-                decoration: InputDecoration(labelText: 'Nombre'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce un nombre';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  _nombre = value;
-                },
-              ),
-              TextFormField(
-                initialValue: _lastName,
-                decoration: InputDecoration(labelText: 'Apellido'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce un apellido';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  _lastName = value;
-                },
-              ),
-              TextFormField(
-                initialValue: _email,
-                decoration: InputDecoration(labelText: 'Correo Electrónico'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce un correo electrónico';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  _email = value;
-                },
-              ),
-              TextFormField(
-                initialValue: _telefono,
-                decoration: InputDecoration(labelText: 'Teléfono'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, introduce un número de teléfono';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  _telefono = value;
-                },
-              ),
-              SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _actualizarUsuario();
-                  }
-                },
-                child: Text(
-                  'Guardar Cambios',
-                  style: TextStyle(
-                      color:
-                          Colors.white), // Cambia el color del texto a blanco
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple[
-                      300], // Cambia el color de fondo del botón si es necesario
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
+    );
+  }
+
+  ListTile _buildProfileInfoTile(IconData icon, String title, String subtitle) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.deepPurple[300]),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      tileColor: Colors.deepPurple[50],
+    );
+  }
+
+  ListTile _buildProfileActionTile(
+      BuildContext context, IconData icon, String title, Widget? page) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.deepPurple[300]),
+      title: Text(title),
+      trailing: Icon(Icons.arrow_forward, color: Colors.deepPurple[300]),
+      tileColor: Colors.deepPurple[50],
+      onTap: page != null
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => page),
+              );
+            }
+          : null,
+    );
+  }
+
+  ListTile _buildLogoutTile(BuildContext context, AuthProvider authProvider) {
+    return ListTile(
+      leading: Icon(Icons.exit_to_app, color: Colors.red),
+      title: Text('Cerrar sesión'),
+      trailing: Icon(Icons.arrow_forward, color: Colors.red),
+      tileColor: Colors.deepPurple[50],
+      onTap: () {
+        authProvider.logout();
+      },
     );
   }
 }
