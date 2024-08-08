@@ -12,11 +12,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
+  bool _isObscured = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
 
   @override
   void dispose() {
@@ -45,14 +51,20 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/login.png'),
-                fit: BoxFit.cover,
+        children: <Widget>[
+          Positioned(
+            top: 0,
+            left: 0,
+            child: ColorFiltered(
+              colorFilter:
+                  ColorFilter.mode(Color(0xFF6F35A5), BlendMode.srcATop),
+              child: Image.asset(
+                'assets/main_top.png', // Cambia esto a la ruta correcta de tu imagen
+                width: size.width * 0.37,
               ),
             ),
           ),
@@ -63,50 +75,51 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(
-                    height: 150,
+                    height: 130,
                   ),
                   Text(
-                    "!Bienvenido de Nuevo!",
+                    "!Bienvenido, Inicia Sesión!",
                     style: GoogleFonts.openSans(
                         fontSize: 25.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                        color: Color.fromARGB(255, 70, 70, 70)),
                   ),
-                  Text(
-                    textAlign: TextAlign.center,
-                    "Inicia Sesión para poder acceder a las funciones y perfil, así como las muchas sorpresa que te esperan.",
-                    style: GoogleFonts.openSans(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white),
+                  ColorFiltered(
+                    colorFilter: const ColorFilter.mode(
+                        Color(0xFF6F35A5), BlendMode.srcATop),
+                    child: Image.asset(
+                      'assets/LOGO HUB BLANCO 1.png',
+                      fit: BoxFit.cover,
+                      width: 200,
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   Container(
                     width: 310,
-                    child: TextFormField(
+                    child: TextField(
                       controller:  _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: const Color.fromARGB(225, 185, 166, 224),
+                        fillColor: const Color.fromARGB(255, 234, 219, 252),
                         labelText: 'Correo Electrónico:',
                         labelStyle: GoogleFonts.openSans(
-                            color: Colors.black,
-                            fontSize: 17,
+                            color: const Color.fromARGB(255, 86, 86, 86),
+                            fontSize: 16,
                             fontWeight: FontWeight.bold),
+                        prefixIcon:
+                            const Icon(Icons.person, color: Color(0xFF6F35A5)),
                         enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepPurple,
-                              style: BorderStyle.solid,
-                              width: 2.0,
+                              style: BorderStyle.none,
                             ),
                             borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
+                                BorderRadius.all(Radius.circular(25))),
                         border: const OutlineInputBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
+                                BorderRadius.all(Radius.circular(25))),
                       ),
                     ),
                   ),
@@ -115,28 +128,41 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Container(
                     width: 310,
-                    child: TextFormField(
+                    child: TextField(
                       controller: _passwordController,
                       focusNode: _passwordFocusNode,
+                      obscuringCharacter: '*',
+                      obscureText: _isObscured,
                       decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.lock,
+                          color: Color(0xFF6F35A5),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscured
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: const Color(0xFF6F35A5),
+                          ),
+                          onPressed: _togglePasswordVisibility,
+                        ),
                         filled: true,
-                        fillColor: Color.fromARGB(225, 185, 166, 224),
+                        fillColor: const Color.fromARGB(255, 234, 219, 252),
                         labelText: 'Contraseña:',
                         labelStyle: GoogleFonts.openSans(
-                            color: Colors.black,
-                            fontSize: 17,
+                            color: const Color.fromARGB(255, 86, 86, 86),
+                            fontSize: 16,
                             fontWeight: FontWeight.bold),
                         enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepPurple,
-                              style: BorderStyle.solid,
-                              width: 2.0,
+                              style: BorderStyle.none,
                             ),
                             borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
+                                BorderRadius.all(Radius.circular(25))),
                         border: const OutlineInputBorder(
                             borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
+                                BorderRadius.all(Radius.circular(25))),
                       ),
                     ),
                   ),
@@ -148,7 +174,13 @@ class _LoginPageState extends State<LoginPage> {
                     child: SizedBox(
                       height: 45,
                       child: ElevatedButton(
-                        onPressed: () => _submit(context),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              )); //
+                        },
                         style: const ButtonStyle(
                           shape: WidgetStatePropertyAll<OutlinedBorder>(
                               RoundedRectangleBorder(
@@ -218,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Row(
                           children: [
                             Text(
-                              'Inicia Sessión Con Google',
+                              'Inicia Sesión Con Google',
                               style: GoogleFonts.openSans(
                                   color: Colors.black,
                                   fontSize: 18,
