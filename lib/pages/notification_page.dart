@@ -24,14 +24,12 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  late Future<List<Notificacion>>
-      _notificacionesFuture; // Futuro para almacenar la lista de pagos
+  late Future<List<Notificacion>> _notificacionesFuture;
 
   @override
   void initState() {
     super.initState();
-    _notificacionesFuture =
-        _getNoti(); // Inicializa el futuro con la función que obtiene los pagos
+    _notificacionesFuture = _getNoti();
   }
 
   Future<List<Notificacion>> _getNoti() async {
@@ -59,7 +57,7 @@ class _NotificationPageState extends State<NotificationPage> {
         elevation: 0,
         title: Text(
           "Digital Event",
-          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -73,33 +71,62 @@ class _NotificationPageState extends State<NotificationPage> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No hay datos disponibles'));
           } else {
-            // Datos disponibles
             List<Notificacion> notificaciones = snapshot.data!;
 
             return ListView.builder(
               itemCount: notificaciones.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "Notificacion id: ${notificaciones[index].notificacionid}"),
-                          SizedBox(height: 8),
-                          Text(
-                              "usuario id: ${notificaciones[index].usuarioid}"),
-                          SizedBox(height: 8),
-                          Text("Descripcion: ${notificaciones[index].mensaje}"),
-                          SizedBox(height: 8),
-                          Text("fecha: ${notificaciones[index].fechaenvio}"),
-                        ],
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 6.0),
+                  child: Stack(
+                    children: [
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Descripción: ${notificaciones[index].mensaje}",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey[800]),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                "Fecha: ${notificaciones[index].fechaenvio}",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.red,
+                          radius: 14,
+                          child: Text(
+                            '${notificaciones[index].notificacionid}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },

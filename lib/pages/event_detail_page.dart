@@ -7,6 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class EventDetailPage extends StatelessWidget {
+  final Evento evento;
+
+  EventDetailPage({required this.evento});
+
   Future<String> createPaymentIntent(int amount, String currency) async {
     try {
       final body = jsonEncode({
@@ -22,7 +26,6 @@ class EventDetailPage extends StatelessWidget {
       if (response.statusCode == 200) {
         final paymentIntentData = jsonDecode(response.body);
         final clientSecret = paymentIntentData['client_secret'] as String;
-        print(clientSecret);
         return clientSecret;
       } else {
         throw Exception('Failed to create payment intent');
@@ -41,9 +44,10 @@ class EventDetailPage extends StatelessWidget {
 
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-            paymentIntentClientSecret: paymentIntentClientSecret,
-            style: ThemeMode.light,
-            merchantDisplayName: 'ejemplo'),
+          paymentIntentClientSecret: paymentIntentClientSecret,
+          style: ThemeMode.light,
+          merchantDisplayName: 'ejemplo',
+        ),
       );
 
       await displayPaymentSheet(context);
@@ -68,10 +72,6 @@ class EventDetailPage extends StatelessWidget {
       }
     }
   }
-
-  final Evento evento;
-
-  EventDetailPage({required this.evento});
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +129,15 @@ class EventDetailPage extends StatelessWidget {
                       style: const TextStyle(color: Colors.grey)),
                 ],
               ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.access_time, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text('Hora: ${evento.hora}',
+                      style: TextStyle(color: Colors.grey[700])),
+                ],
+              ),
               const SizedBox(height: 16),
               const Divider(color: Colors.grey),
               const SizedBox(height: 16),
@@ -179,6 +188,78 @@ class EventDetailPage extends StatelessWidget {
                       'Autorizado el: ${DateFormat('yyyy-MM-dd').format(evento.fechaAutorizacion)}',
                       style: TextStyle(color: Colors.grey[700])),
                 ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.people, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text('Máximo de Personas: ${evento.maxPer}',
+                      style: TextStyle(color: Colors.grey[700])),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: Colors.grey),
+              const SizedBox(height: 16),
+              const Text('Selecciona tu Asiento',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+
+              // Diseño Mejorado de Selección de Asientos
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 10,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: 25,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Asiento Seleccionado'),
+                          content:
+                              Text('Has seleccionado el asiento ${index + 1}'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Colors.purple[100],
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${index + 1}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 16),
+              const Text('Precio del Evento',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text(
+                '\$50.00 USD',
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple),
               ),
               const SizedBox(height: 16),
               Center(

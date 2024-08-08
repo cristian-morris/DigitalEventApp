@@ -4,6 +4,7 @@ import 'package:digitalevent/pages/recent_event_page.dart';
 import 'package:digitalevent/pages/user.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:animations/animations.dart'; // Paquete para animaciones
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  final List <Widget> _pages = [
+  final List<Widget> _pages = [
     EventosPage(),
     RecentEventPage(),
     NotificationPage(),
@@ -31,44 +32,71 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _pages[_selectedIndex],
-        bottomNavigationBar: Container(
+      body: PageTransitionSwitcher(
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (child, animation, secondaryAnimation) {
+          return FadeThroughTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          );
+        },
+        child: _pages[_selectedIndex],
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
           color: Colors.deepPurple[400],
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
-            child: GNav(
-              onTabChange: _navigateBottonBar,
-              selectedIndex: _selectedIndex,
-              rippleColor: Colors.white,
-              hoverColor: Colors.white,
-              gap: 8,
-              activeColor: Colors.white,
-              iconSize: 24,
-              padding: EdgeInsets.all(10),
-              duration: Duration(milliseconds: 200),
-              tabBackgroundColor: Colors.deepPurple.shade300,
-              color: Colors.grey.shade300,
-              tabs: [
-                GButton(
-                  icon: Icons.home,
-                  text: 'Eventos',
-                ),
-                GButton(
-                  icon: Icons.autorenew_rounded,
-                  text: 'Recientes',
-                ),
-                GButton(
-                  icon: Icons.notifications,
-                  text: 'Noticaiones',
-                ),
-                GButton(
-                  icon: Icons.person,
-                  text: 'Perfil',
-                ),
-              ],
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, -2),
             ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
+          child: GNav(
+            onTabChange: _navigateBottonBar,
+            selectedIndex: _selectedIndex,
+            rippleColor: Colors.white,
+            hoverColor: Colors.white,
+            gap: 8,
+            activeColor: Colors.white,
+            iconSize: 24,
+            padding: EdgeInsets.all(16),
+            duration: Duration(milliseconds: 300),
+            tabBackgroundColor: Colors.deepPurple.shade300,
+            color: Colors.grey.shade300,
+            tabs: [
+              GButton(
+                icon: Icons.home,
+                text: 'Eventos',
+                iconActiveColor: Colors.orange,
+              ),
+              GButton(
+                icon: Icons.autorenew_rounded,
+                text: 'Recientes',
+                iconActiveColor: Colors.lightGreen,
+              ),
+              GButton(
+                icon: Icons.notifications,
+                text: 'Notificaciones',
+                iconActiveColor: Colors.red,
+              ),
+              GButton(
+                icon: Icons.person,
+                text: 'Perfil',
+                iconActiveColor: Colors.blueAccent,
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

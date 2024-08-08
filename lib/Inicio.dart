@@ -13,7 +13,7 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
 
   bool _isObscured = true;
-  
+
   String? selectedRole;
   String? selectedMembership;
 
@@ -30,32 +30,33 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> _registerUser() async {
-  if (_formKey.currentState!.validate()) {
-    final response = await http.post(
-      Uri.parse('https://api-digitalevent.onrender.com/api/users/register'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, dynamic>{
-        'nombre': nameController.text,
-        'email': emailController.text,
-        'contrasena': passwordController.text,
-        'telefono': phoneController.text,
-        'last_name': lastNameController.text,
-        'rol_id': '3', // Rol predefinido (Cliente)
-      }),
-    );
+    if (_formKey.currentState!.validate()) {
+      final response = await http.post(
+        Uri.parse('https://api-digitalevent.onrender.com/api/users/register'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'nombre': nameController.text,
+          'email': emailController.text,
+          'contrasena': passwordController.text,
+          'telefono': phoneController.text,
+          'last_name': lastNameController.text,
+          'rol_id': '3', // Rol predefinido (Cliente)
+        }),
+      );
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-    // Aquí asumimos que el servidor devuelve un JSON en el cuerpo de la respuesta
-    final responseData = jsonDecode(response.body);
+      // Aquí asumimos que el servidor devuelve un JSON en el cuerpo de la respuesta
+      final responseData = jsonDecode(response.body);
 
-    if (response.statusCode == 201 || responseData['message'] == 'User created successfully') {
-       ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Registrado, por favor ve a login")));
-             // Limpiar los campos del formulario
+      if (response.statusCode == 201 ||
+          responseData['message'] == 'User created successfully') {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Registrado, por favor ve a login")));
+        // Limpiar los campos del formulario
         nameController.clear();
         emailController.clear();
         passwordController.clear();
@@ -64,29 +65,27 @@ class _RegisterState extends State<Register> {
         setState(() {
           selectedRole = null;
         });
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text('Error al registrar el usuario: ${response.body}'),
-            actions: [
-              TextButton(
-                child: const Text('Cerrar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('Error al registrar el usuario: ${response.body}'),
+              actions: [
+                TextButton(
+                  child: const Text('Cerrar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -392,7 +391,7 @@ class _RegisterState extends State<Register> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const LoginPage()));
+                                builder: (context) => LoginPage()));
                           },
                           child: Text(
                             'Inicia Sesión',

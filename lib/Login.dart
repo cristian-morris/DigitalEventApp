@@ -1,12 +1,11 @@
 import 'package:digitalevent/Inicio.dart';
 import 'package:digitalevent/auth_provider.dart';
+import 'package:digitalevent/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -40,14 +39,14 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     try {
-      await Provider.of<AuthProvider>(context, listen: false).login(email, password);
+      await Provider.of<AuthProvider>(context, listen: false)
+          .login(email, password);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login fallido!')),
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     width: 310,
                     child: TextField(
-                      controller:  _emailController,
+                      controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         filled: true,
@@ -175,10 +174,10 @@ class _LoginPageState extends State<LoginPage> {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => HomePage(),
+                                builder: (context) => const HomePage(),
                               )); //
                         },
                         style: const ButtonStyle(
