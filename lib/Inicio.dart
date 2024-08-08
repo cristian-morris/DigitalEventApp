@@ -12,6 +12,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
 
+  bool _isObscured = true;
+  
   String? selectedRole;
   String? selectedMembership;
 
@@ -20,6 +22,12 @@ class _RegisterState extends State<Register> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isObscured = !_isObscured;
+    });
+  }
 
   Future<void> _registerUser() async {
   if (_formKey.currentState!.validate()) {
@@ -34,7 +42,7 @@ class _RegisterState extends State<Register> {
         'contrasena': passwordController.text,
         'telefono': phoneController.text,
         'last_name': lastNameController.text,
-        'rol_id': selectedRole,
+        'rol_id': '3', // Rol predefinido (Cliente)
       }),
     );
 
@@ -82,14 +90,19 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/login.png'),
-                fit: BoxFit.cover,
+          Positioned(
+            top: 0,
+            left: 0,
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                  Color.fromARGB(255, 114, 53, 171), BlendMode.srcATop),
+              child: Image.asset(
+                'assets/main_top.png',
+                width: size.width * 0.37,
               ),
             ),
           ),
@@ -108,14 +121,18 @@ class _RegisterState extends State<Register> {
                       "Registrate",
                       style: GoogleFonts.lato(
                         fontSize: 28.0,
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 70, 70, 70),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
-                      'Crea tu cuenta ahora mismo',
-                      style:
-                          GoogleFonts.roboto(color: Colors.white, fontSize: 17),
+                    ColorFiltered(
+                      colorFilter: const ColorFilter.mode(
+                          Color(0xFF6F35A5), BlendMode.srcATop),
+                      child: Image.asset(
+                        'assets/LOGO HUB BLANCO 1.png',
+                        fit: BoxFit.cover,
+                        width: 200,
+                      ),
                     ),
                     const SizedBox(
                       height: 15,
@@ -125,21 +142,24 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.person, color: Color(0xFF6F35A5)),
                           filled: true,
-                          fillColor: const Color.fromARGB(225, 185, 166, 224),
+                          fillColor: const Color.fromARGB(255, 234, 219, 252),
                           labelText: 'Nombre:',
                           labelStyle: GoogleFonts.openSans(
-                              color: Colors.black,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700),
+                            color: const Color.fromARGB(255, 86, 86, 86),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                           enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepPurple,
+                              style: BorderStyle.none,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                           border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                         ),
                         validator: (value) {
@@ -158,8 +178,10 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         controller: lastNameController,
                         decoration: InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.person, color: Color(0xFF6F35A5)),
                           filled: true,
-                          fillColor: const Color.fromARGB(225, 185, 166, 224),
+                          fillColor: const Color.fromARGB(255, 234, 219, 252),
                           labelText: 'Apellido:',
                           labelStyle: GoogleFonts.openSans(
                               color: Colors.black,
@@ -167,14 +189,12 @@ class _RegisterState extends State<Register> {
                               fontWeight: FontWeight.bold),
                           enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepPurple,
-                              style: BorderStyle.solid,
-                              width: 2.0,
+                              style: BorderStyle.none,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                           border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                         ),
                         validator: (value) {
@@ -193,8 +213,10 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.email, color: Color(0xFF6F35A5)),
                           filled: true,
-                          fillColor: const Color.fromARGB(225, 185, 166, 224),
+                          fillColor: const Color.fromARGB(255, 234, 219, 252),
                           labelText: 'Correo Electrónico:',
                           labelStyle: GoogleFonts.openSans(
                               color: Colors.black,
@@ -202,14 +224,12 @@ class _RegisterState extends State<Register> {
                               fontWeight: FontWeight.bold),
                           enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.deepPurple,
-                              style: BorderStyle.solid,
-                              width: 2.0,
+                              style: BorderStyle.none,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                           border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                         ),
                         validator: (value) {
@@ -230,9 +250,22 @@ class _RegisterState extends State<Register> {
                       width: 310,
                       child: TextFormField(
                         controller: passwordController,
+                        obscuringCharacter: '*',
+                        obscureText: _isObscured,
                         decoration: InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.lock, color: Color(0xFF6F35A5)),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscured
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: const Color(0xFF6F35A5),
+                            ),
+                            onPressed: _togglePasswordVisibility,
+                          ),
                           filled: true,
-                          fillColor: const Color.fromARGB(225, 185, 166, 224),
+                          fillColor: const Color.fromARGB(255, 234, 219, 252),
                           labelText: 'Contraseña:',
                           labelStyle: GoogleFonts.openSans(
                               color: Colors.black,
@@ -241,13 +274,13 @@ class _RegisterState extends State<Register> {
                           enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.deepPurple,
-                              style: BorderStyle.solid,
+                              style: BorderStyle.none,
                               width: 2.0,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                           border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                         ),
                         validator: (value) {
@@ -266,8 +299,10 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         controller: phoneController,
                         decoration: InputDecoration(
+                          prefixIcon:
+                              Icon(Icons.phone, color: Color(0xFF6F35A5)),
                           filled: true,
-                          fillColor: const Color.fromARGB(225, 185, 166, 224),
+                          fillColor: const Color.fromARGB(255, 234, 219, 252),
                           labelText: 'Teléfono:',
                           labelStyle: GoogleFonts.openSans(
                               color: Colors.black,
@@ -276,63 +311,18 @@ class _RegisterState extends State<Register> {
                           enabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.deepPurple,
-                              style: BorderStyle.solid,
+                              style: BorderStyle.none,
                               width: 2.0,
                             ),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                           border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingresa tu teléfono';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      width: 310,
-                      child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: const Color.fromARGB(225, 185, 166, 224),
-                          labelText: 'Rol:',
-                          labelStyle: GoogleFonts.openSans(
-                              color: Colors.black,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold),
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.deepPurple,
-                              style: BorderStyle.solid,
-                              width: 2.0,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                          ),
-                        ),
-                        value: selectedRole,
-                        items: const [
-                          DropdownMenuItem(
-                              value: '2', child: Text('Organizador')),
-                          DropdownMenuItem(value: '3', child: Text('Cliente')),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selectedRole = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor selecciona un rol';
                           }
                           return null;
                         },
@@ -402,7 +392,7 @@ class _RegisterState extends State<Register> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>  LoginPage()));
+                                builder: (context) => const LoginPage()));
                           },
                           child: Text(
                             'Inicia Sesión',
