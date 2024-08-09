@@ -1,6 +1,5 @@
 import 'package:digitalevent/Inicio.dart';
 import 'package:digitalevent/auth_provider.dart';
-import 'package:digitalevent/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -14,8 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isObscured = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _emailFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
+
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -23,28 +21,48 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-  }
 
-  void _submit(BuildContext context) async {
+ void _submit(BuildContext context) async {
     final email = _emailController.text;
     final password = _passwordController.text;
     if (email.isEmpty || password.isEmpty) {
+       showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Campos vacíos'),
+        content: Text('Por favor ingresa tus credenciales'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              setState(() {});
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
       return;
     }
     try {
-      await Provider.of<AuthProvider>(context, listen: false)
-          .login(email, password);
+      await Provider.of<AuthProvider>(context, listen: false).login(email, password);
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login fallido!')),
-      );
+      showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Error de autenticación'),
+        content: Text('Email o contraseña no válidos'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              setState(() {});
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
     }
   }
 
@@ -99,7 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                     width: 310,
                     child: TextField(
                       controller: _emailController,
-                      focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: const Color.fromARGB(255, 234, 219, 252),
@@ -129,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
                     width: 310,
                     child: TextField(
                       controller: _passwordController,
-                      focusNode: _passwordFocusNode,
                       obscuringCharacter: '*',
                       obscureText: _isObscured,
                       decoration: InputDecoration(
@@ -173,13 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: SizedBox(
                       height: 45,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HomePage(),
-                              )); //
-                        },
+                        onPressed: () => _submit(context),
                         style: const ButtonStyle(
                           shape: WidgetStatePropertyAll<OutlinedBorder>(
                               RoundedRectangleBorder(
