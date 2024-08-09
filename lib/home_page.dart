@@ -4,7 +4,7 @@ import 'package:digitalevent/pages/recent_event_page.dart';
 import 'package:digitalevent/pages/user.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:animations/animations.dart'; // Paquete para animaciones
+import 'package:animations/animations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,7 +45,15 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.deepPurple[400],
+          gradient: LinearGradient(
+            colors: [
+              Colors.deepPurple[400]!,
+              Colors.purple,
+              Colors.purpleAccent,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),
@@ -66,31 +74,35 @@ class _HomePageState extends State<HomePage> {
             rippleColor: Colors.white,
             hoverColor: Colors.white,
             gap: 8,
-            activeColor: Colors.white,
+            activeColor: Colors.black,
             iconSize: 24,
             padding: EdgeInsets.all(16),
             duration: Duration(milliseconds: 300),
-            tabBackgroundColor: Colors.deepPurple.shade300,
+            tabBackgroundColor: Colors.white,
             color: Colors.grey.shade300,
             tabs: [
               GButton(
                 icon: Icons.home,
                 text: 'Eventos',
+                iconColor: Colors.white,
                 iconActiveColor: Colors.orange,
               ),
               GButton(
                 icon: Icons.autorenew_rounded,
                 text: 'Recientes',
+                iconColor: Colors.white,
                 iconActiveColor: Colors.lightGreen,
               ),
               GButton(
                 icon: Icons.notifications,
                 text: 'Notificaciones',
+                iconColor: Colors.white,
                 iconActiveColor: Colors.red,
               ),
               GButton(
                 icon: Icons.person,
                 text: 'Perfil',
+                iconColor: Colors.white,
                 iconActiveColor: Colors.blueAccent,
               ),
             ],
