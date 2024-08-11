@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = "pk_test_51PXQwjRvOexYqm868BaEds2SOFXYVM32nhnnBCKNUvDiyf14mBpHoFETJYJ7kdLPrQ2VuXHLp5hwgJsHMlYCl6x400OGvYJj9h";
+  Stripe.publishableKey =
+      "pk_test_51PXQwjRvOexYqm868BaEds2SOFXYVM32nhnnBCKNUvDiyf14mBpHoFETJYJ7kdLPrQ2VuXHLp5hwgJsHMlYCl6x400OGvYJj9h";
   runApp(const MyApp());
 }
 
@@ -26,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // Mostrar el SplashScreen por 3 segundos.
+    // Mostrar el SplashScreen por 5 segundos.
     Future.delayed(Duration(seconds: 5), () {
       setState(() {
         _showSplash = false;
@@ -40,14 +41,16 @@ class _MyAppState extends State<MyApp> {
       create: (ctx) => AuthProvider(),
       child: Consumer<AuthProvider>(
         builder: (ctx, auth, _) => MaterialApp(
-          home: _showSplash 
-              ? SplashScreen() 
-              : auth.isAuth 
-                  ? HomePage() 
+          debugShowCheckedModeBanner: false,
+          home: _showSplash
+              ? SplashScreen()
+              : auth.isAuth
+                  ? HomePage()
                   : FutureBuilder(
                       future: auth.tryAutoLogin(),
                       builder: (ctx, authResultSnapshot) {
-                        if (authResultSnapshot.connectionState == ConnectionState.waiting) {
+                        if (authResultSnapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return WaitingScreen();
                         } else {
                           return LoginPage();
