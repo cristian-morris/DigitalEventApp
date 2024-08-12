@@ -13,7 +13,6 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final _formKey = GlobalKey<FormState>();
 
   bool _isObscured = true;
 
@@ -70,16 +69,18 @@ class _RegisterState extends State<Register> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Registro exitoso, iniciando sesión...')),
       );
-        Navigator.of(context).pushAndRemoveUntil(
-           MaterialPageRoute(builder: (ctx) => HomePage()),
-           (Route<dynamic> route) => false,
-            );
+    Navigator.of(context).pushAndRemoveUntil(
+  MaterialPageRoute(builder: (context) => HomePage()),
+  (route) => false, // Elimina todas las rutas anteriores
+);
+
+      
     } catch (error) {
          showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Error de autenticación'),
-        content: Text('datos no validos, revise sus datos'),
+        content: Text('datos no validos, revise sus datos ${error}'),
         actions: [
           TextButton(
             onPressed: () {

@@ -108,12 +108,24 @@ class _PerfilVerState extends State<PerfilVer> {
                                                 offset: Offset(0, 5),
                                               ),
                                             ],
-                                            image: DecorationImage(
+                                            image: user['fotoPerfil'] != null
+                                          ?  DecorationImage(
                                               image: NetworkImage(
                                                   user['fotoPerfil']),
                                               fit: BoxFit.cover,
-                                            ),
+                                            )
+                                            : null
                                           ),
+                                          child: user['fotoPerfil'] == null
+                                          ? Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(9.0),
+                                              child: Text("Sin foto de perfil",
+                                              style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          )
+                                          : null
                                         ),
                                       ),
                                       Positioned(

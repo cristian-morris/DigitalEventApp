@@ -8,59 +8,67 @@ import 'package:http/http.dart' as http;
 class PaymentHistory {
   final int pagoId;
   final String monto;
-  final DateTime fecha;
-  final int tipoPagoId;
-  final int usuarioId;
+  final DateTime? fecha;
+  final int? tipoPagoId;
+  final int? usuarioId;
   final int eventoId;
   final DateTime? fInicioEp;
   final DateTime? fFinEp;
-  final String numeroTarjeta;
-  final DateTime fechaExpiracion;
+  final String? numeroTarjeta;
+  final DateTime? fechaExpiracion;
 
   PaymentHistory({
     required this.pagoId,
     required this.monto,
-    required this.fecha,
-    required this.tipoPagoId,
-    required this.usuarioId,
+    this.fecha,
+    this.tipoPagoId,
+    this.usuarioId,
     required this.eventoId,
     this.fInicioEp,
     this.fFinEp,
-    required this.numeroTarjeta,
-    required this.fechaExpiracion,
+    this.numeroTarjeta,
+    this.fechaExpiracion,
   });
 
-  factory PaymentHistory.fromJson(Map<String, dynamic> json) {
-    return PaymentHistory(
-      pagoId: json['pago_id'],
-      monto: json['monto'],
-      fecha: DateTime.parse(json['fecha']),
-      tipoPagoId: json['tipo_pago_id'],
-      usuarioId: json['usuario_id'],
-      eventoId: json['evento_id'],
-      fInicioEp: json['f_inicio_ep'] != null
-          ? DateTime.parse(json['f_inicio_ep'])
-          : null,
-      fFinEp:
-          json['f_FIN_ep'] != null ? DateTime.parse(json['f_FIN_ep']) : null,
-      numeroTarjeta: json['numero_tarjeta'],
-      fechaExpiracion: DateTime.parse(json['fecha_expiracion']),
-    );
-  }
+factory PaymentHistory.fromJson(Map<String, dynamic> json) {
+  return PaymentHistory(
+    pagoId: json['pago_id'] as int? ?? 0, // Manejo seguro para valores nulos
+    monto: json['monto'] as String? ?? '0.00', // Manejo seguro para valores nulos
+    fecha: json['fecha'] != null ? DateTime.tryParse(json['fecha']) : null,
+    tipoPagoId: json['tipo_pago_id'] as int?,
+    usuarioId: json['usuario_id'] as int?,
+    eventoId: json['evento_id'] as int? ?? 0, // Manejo seguro para valores nulos
+    fInicioEp: json['f_inicio_ep'] != null ? DateTime.tryParse(json['f_inicio_ep']) : null,
+    fFinEp: json['f_FIN_ep'] != null ? DateTime.tryParse(json['f_FIN_ep']) : null,
+    numeroTarjeta: json['numero_tarjeta'] as String?,
+    fechaExpiracion: json['fecha_expiracion'] != null ? DateTime.tryParse(json['fecha_expiracion']) : null,
+  );
 }
 
-Future<List<PaymentHistory>> fetchPaymentHistory() async {
-  final response = await http.get(
-    Uri.parse('https://api-digitalevent.onrender.com/api/pagos/historialpagos'),
-  );
+}
 
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    return data.map((json) => PaymentHistory.fromJson(json)).toList();
-  } else {
+
+Future<List<PaymentHistory>> fetchPaymentHistory() async {
+  try {
+    final response = await http.get(
+      Uri.parse('https://api-digitalevent.onrender.com/api/pagos/historialpagos'),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+    
+      return data.map((json) => PaymentHistory.fromJson(json)).toList();
+    } else {
+      // Imprimir el cuerpo de la respuesta en caso de error
+     
+      throw Exception('Failed to load payment history');
+    }
+  } catch (e) {
+    print('Exception caught: $e');
     throw Exception('Failed to load payment history');
   }
 }
+
 
 class historialPago extends StatefulWidget {
   const historialPago({super.key});
@@ -154,7 +162,9 @@ class _historialPagoState extends State<historialPago> {
                             ),
                             SizedBox(width: 8.0),
                             Text(
-                              'Fecha: ${formatDate(payment.fecha)}',
+                              payment.fecha != null
+                            ?  'Fecha: ${formatDate(payment.fecha!)}'
+                            : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
                                   fontSize: 15,
@@ -171,7 +181,9 @@ class _historialPagoState extends State<historialPago> {
                             ),
                             SizedBox(width: 8.0),
                             Text(
-                              'Tipo de Pago: ${payment.tipoPagoId}',
+                              payment.tipoPagoId != null
+                             ? 'Tipo de Pago: ${payment.tipoPagoId}'
+                             : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
                                   fontSize: 15,
@@ -188,7 +200,9 @@ class _historialPagoState extends State<historialPago> {
                             ),
                             SizedBox(width: 8.0),
                             Text(
-                              'Usuario: ${payment.usuarioId}',
+                              payment.usuarioId != null
+                             ? 'Usuario: ${payment.usuarioId}'
+                             : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
                                   fontSize: 15,
@@ -220,7 +234,9 @@ class _historialPagoState extends State<historialPago> {
                               FaIcon(FontAwesomeIcons.calendarDay),
                               SizedBox(width: 8.0),
                               Text(
-                                'Fecha Inicio EP: ${formatDate(payment.fInicioEp!)}',
+                                payment.fInicioEp != null
+                               ? 'Fecha Inicio EP: ${formatDate(payment.fInicioEp!)}'
+                               : "sin datos",
                                 style: GoogleFonts.openSans(
                                     color: Colors.white,
                                     fontSize: 15,
@@ -235,7 +251,9 @@ class _historialPagoState extends State<historialPago> {
                               FaIcon(FontAwesomeIcons.calendarDay),
                               SizedBox(width: 8.0),
                               Text(
-                                'Fecha Fin EP: ${formatDate(payment.fFinEp!)}',
+                                payment.fFinEp != null
+                               ? 'Fecha Fin EP: ${formatDate(payment.fFinEp!)}'
+                               : "sin datos",
                                 style: GoogleFonts.openSans(
                                     color: Colors.white,
                                     fontSize: 15,
@@ -252,7 +270,9 @@ class _historialPagoState extends State<historialPago> {
                             ),
                             SizedBox(width: 8.0),
                             Text(
-                              'Número Tarjeta: ${payment.numeroTarjeta}',
+                              payment.numeroTarjeta != null
+                            ?  'Número Tarjeta: ${payment.numeroTarjeta}'
+                            : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
                                   fontSize: 15,
@@ -266,7 +286,9 @@ class _historialPagoState extends State<historialPago> {
                             FaIcon(FontAwesomeIcons.calendar),
                             SizedBox(width: 8.0),
                             Text(
-                              'Fecha Expiración: ${formatDate(payment.fechaExpiracion)}',
+                              payment.fechaExpiracion != null
+                             ? 'Fecha Expiración: ${formatDate(payment.fechaExpiracion!)}'
+                             : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
                                   fontSize: 15,

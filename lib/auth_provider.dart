@@ -35,6 +35,7 @@ class AuthProvider with ChangeNotifier {
         prefs.setString('token', _token!);
         prefs.setString('user', json.encode(_user));
         notifyListeners();
+        print("Listeners notificados después del login, isAuth: $isAuth");
       } else {
         throw Exception(responseData['error']);
       }
@@ -79,6 +80,7 @@ class AuthProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
     prefs.remove('user');
+    print("Sesión cerrada. Estado actualizado.");
     notifyListeners();
   }
 
