@@ -103,7 +103,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
     return Scaffold(
-      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
