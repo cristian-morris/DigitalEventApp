@@ -1,4 +1,3 @@
-// search_page.dart
 import 'dart:convert';
 import 'package:digitalevent/models/evento.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +98,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(25.0),
-              borderSide: BorderSide(color: Colors.white),
+              borderSide: BorderSide(color: Colors.purpleAccent),
             ),
           ),
         ),
@@ -125,9 +124,11 @@ class _SearchPageState extends State<SearchPage> {
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Colors.purpleAccent))
           : _filteredEventos.isEmpty
-              ? Center(child: Text('No hay eventos disponibles'))
+              ? Center(
+                  child: Text('No hay eventos disponibles',
+                      style: TextStyle(color: Colors.purpleAccent)))
               : ListView.builder(
                   padding: EdgeInsets.all(18.0),
                   itemCount: _filteredEventos.length,
@@ -147,37 +148,98 @@ class _SearchPageState extends State<SearchPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
                         ),
+                        elevation: 5,
+                        shadowColor: Colors.black38,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Image.network(evento.imagenUrl,
-                                  height: 100,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover),
+                              Stack(
+                                children: [
+                                  Image.network(
+                                    evento.imagenUrl,
+                                    height: 145,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Positioned(
+                                    bottom: 20,
+                                    right: 170,
+                                    left: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12.0, vertical: 4.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.purple,
+                                        borderRadius: BorderRadius.horizontal(
+                                          left: Radius.zero,
+                                          right: Radius.elliptical(110.0, 20.0),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        evento.categoriaNombre,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 10.0,
+                                              color: Colors.black26,
+                                              offset: Offset(2.0, 2.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: Text(
                                   evento.nombreEvento,
                                   style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text(
-                                  '${evento.fechaInicio.toLocal()}'
-                                      .split(' ')[0],
-                                  style: TextStyle(color: Colors.grey),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.date_range,
+                                        size: 16, color: Colors.grey),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      '${evento.fechaInicio.toLocal()}'
+                                          .split(' ')[0],
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 14),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  evento.ubicacion,
-                                  style: TextStyle(color: Colors.grey),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.location_on,
+                                        size: 16, color: Colors.grey),
+                                    SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        evento.ubicacion,
+                                        style: TextStyle(
+                                            color: Colors.grey, fontSize: 14),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],

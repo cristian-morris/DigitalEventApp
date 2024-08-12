@@ -219,7 +219,6 @@ class EventoCard extends StatelessWidget {
                   ),
                   Positioned(
                     bottom: 20,
-                    right: 170,
                     left: 0,
                     child: Container(
                       padding:
@@ -228,22 +227,25 @@ class EventoCard extends StatelessWidget {
                         color: Colors.purple,
                         borderRadius: BorderRadius.horizontal(
                           left: Radius.zero,
-                          right: Radius.elliptical(110.0, 20.0),
+                          right: Radius.elliptical(50.0, 20.0),
                         ),
                       ),
-                      child: Text(
-                        evento.categoriaNombre,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 10.0,
-                              color: Colors.black26,
-                              offset: Offset(2.0, 2.0),
-                            ),
-                          ],
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          evento.categoriaNombre,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 10.0,
+                                color: Colors.black26,
+                                offset: Offset(2.0, 2.0),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
