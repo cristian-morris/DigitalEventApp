@@ -135,7 +135,7 @@ class EventDetailPage extends StatelessWidget {
                   const Icon(Icons.access_time, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text('Hora: ${evento.hora}',
-                      style: TextStyle(color: Colors.grey[700])),
+                      style: const TextStyle(color: Colors.grey)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -204,8 +204,6 @@ class EventDetailPage extends StatelessWidget {
               const Text('Selecciona tu Asiento',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-
-              // Diseño Mejorado de Selección de Asientos
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -249,7 +247,8 @@ class EventDetailPage extends StatelessWidget {
                   );
                 },
               ),
-
+              const SizedBox(height: 16),
+              const Divider(color: Colors.grey),
               const SizedBox(height: 16),
               const Text('Precio del Evento',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -263,37 +262,67 @@ class EventDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Colors.purple,
-                        Colors.deepPurple,
-                        Colors.purpleAccent
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                child: GestureDetector(
+                  onTap: () => makePayment(context),
+                  child: Container(
+                    width: 255,
+                    height: 53,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Colors.purple,
+                          Colors.deepPurple,
+                          Colors.purpleAccent
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () => makePayment(context),
-                    icon: const Icon(Icons.payment),
-                    label: const Text("Comprar Boleto"),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    //* No lo borren xd
+                    // child: ElevatedButton.icon(
+                    //   onPressed: () => makePayment(context),
+                    //   icon: const Icon(Icons.payment),
+                    //   label: const Text("Comprar Boleto"),
+                    //   style: ElevatedButton.styleFrom(
+                    //     foregroundColor: Colors.white,
+                    //     backgroundColor: Colors.transparent,
+                    //     padding: const EdgeInsets.symmetric(
+                    //       horizontal: 50,
+                    //       vertical: 15,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(10.0),
+                    //     ),
+                    //     textStyle: const TextStyle(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //   ),
+                    // ),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.payment,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              "Comprar Boleto",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ],
+                        )
+                      ],
                     ),
                   ),
                 ),

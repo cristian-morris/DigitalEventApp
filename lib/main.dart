@@ -1,5 +1,5 @@
-import 'package:digitalevent/Inicio.dart';
-import 'package:digitalevent/Login.dart';
+import 'package:digitalevent/register.dart';
+import 'package:digitalevent/login.dart';
 import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/home_page.dart';
 import 'package:digitalevent/view/splash_screen.dart';
