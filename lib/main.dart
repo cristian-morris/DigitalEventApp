@@ -3,6 +3,7 @@ import 'package:digitalevent/login.dart';
 import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/home_page.dart';
 import 'package:digitalevent/view/splash_screen.dart';
+import 'package:digitalevent/view/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Stripe.publishableKey =
       "pk_test_51PXQwjRvOexYqm868BaEds2SOFXYVM32nhnnBCKNUvDiyf14mBpHoFETJYJ7kdLPrQ2VuXHLp5hwgJsHMlYCl6x400OGvYJj9h";
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -37,11 +43,16 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return ChangeNotifierProvider(
       create: (ctx) => AuthProvider(),
       child: Consumer<AuthProvider>(
         builder: (ctx, auth, _) => MaterialApp(
           debugShowCheckedModeBanner: false,
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          themeMode:
+              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           home: _showSplash
               ? SplashScreen()
               : auth.isAuth

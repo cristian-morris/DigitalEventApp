@@ -1,5 +1,6 @@
 import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/pages/historial_pago.dart';
+import 'package:digitalevent/view/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class _PerfilVerState extends State<PerfilVer> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
+    final theme = Theme.of(context);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -29,6 +31,9 @@ class _PerfilVerState extends State<PerfilVer> {
                       Colors.deepPurple,
                       Colors.purple,
                       Colors.purpleAccent
+                      // theme.colorScheme.primary,
+                      // theme.colorScheme.secondary,
+                      // theme.colorScheme.tertiary,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -44,7 +49,7 @@ class _PerfilVerState extends State<PerfilVer> {
           child: Text(
             'Mi cuenta',
             style: TextStyle(
-              color: Colors.white,
+              color: theme.colorScheme.onPrimary,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -74,6 +79,9 @@ class _PerfilVerState extends State<PerfilVer> {
                                 Colors.deepPurple,
                                 Colors.purple,
                                 Colors.purpleAccent
+                                // theme.colorScheme.primary,
+                                // theme.colorScheme.secondary,
+                                // theme.colorScheme.tertiary,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -98,7 +106,8 @@ class _PerfilVerState extends State<PerfilVer> {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                                color: Colors.white,
+                                                color:
+                                                    theme.colorScheme.onPrimary,
                                                 width: 2.0),
                                             boxShadow: [
                                               BoxShadow(
@@ -109,23 +118,29 @@ class _PerfilVerState extends State<PerfilVer> {
                                               ),
                                             ],
                                             image: user['fotoPerfil'] != null
-                                          ?  DecorationImage(
-                                              image: NetworkImage(
-                                                  user['fotoPerfil']),
-                                              fit: BoxFit.cover,
-                                            )
-                                            : null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(
+                                                        user['fotoPerfil']),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : null,
                                           ),
                                           child: user['fotoPerfil'] == null
-                                          ? Center(
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(9.0),
-                                              child: Text("Sin foto de perfil",
-                                              style: TextStyle(color: Colors.white),
-                                              ),
-                                            ),
-                                          )
-                                          : null
+                                              ? Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            9.0),
+                                                    child: Text(
+                                                      "Sin foto de perfil",
+                                                      style: TextStyle(
+                                                          color: theme
+                                                              .colorScheme
+                                                              .onPrimary),
+                                                    ),
+                                                  ),
+                                                )
+                                              : null,
                                         ),
                                       ),
                                       Positioned(
@@ -139,10 +154,12 @@ class _PerfilVerState extends State<PerfilVer> {
                                             width: 30,
                                             height: 30,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color:
+                                                  theme.colorScheme.onPrimary,
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: Colors.black,
+                                                color: theme
+                                                    .colorScheme.onSecondary,
                                                 width: 1.5,
                                               ),
                                             ),
@@ -163,7 +180,7 @@ class _PerfilVerState extends State<PerfilVer> {
                                 '${user['nombre']} ${user['last_name']}',
                                 style: TextStyle(
                                   fontSize: 22.0,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -174,30 +191,32 @@ class _PerfilVerState extends State<PerfilVer> {
                       ],
                     ),
                     Container(
-                      color: Colors.white,
+                      color: theme.colorScheme.background,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 20.0),
                       child: Column(
                         children: [
                           _buildProfileInfoTile(Icons.person, 'Nombre',
-                              '${user['nombre']} ${user['last_name']}'),
+                              '${user['nombre']} ${user['last_name']}', theme),
+                          SizedBox(height: 10),
+                          _buildProfileInfoTile(Icons.email,
+                              'Correo Electrónico', user['email'], theme),
                           SizedBox(height: 10),
                           _buildProfileInfoTile(
-                              Icons.email, 'Correo Electrónico', user['email']),
-                          SizedBox(height: 10),
-                          _buildProfileInfoTile(
-                              Icons.phone, 'Teléfono', user['telefono']),
+                              Icons.phone, 'Teléfono', user['telefono'], theme),
+                          Divider(height: 30, thickness: 1),
+                          _buildThemeSwitchTile(context, theme),
                           Divider(height: 30, thickness: 1),
                           _buildProfileActionTile(context, Icons.history,
-                              'Historial de pagos', historialPago()),
+                              'Historial de pagos', historialPago(), theme),
                           SizedBox(height: 10),
                           _buildProfileActionTile(context, Icons.policy,
-                              'Política de privacidad', null),
+                              'Política de privacidad', null, theme),
                           SizedBox(height: 10),
-                          _buildProfileActionTile(
-                              context, Icons.help, 'Centro de ayuda', null),
+                          _buildProfileActionTile(context, Icons.help,
+                              'Centro de ayuda', null, theme),
                           Divider(height: 30, thickness: 1),
-                          _buildLogoutTile(context, authProvider),
+                          _buildLogoutTile(context, authProvider, theme),
                           SizedBox(height: 10),
                         ],
                       ),
@@ -209,26 +228,30 @@ class _PerfilVerState extends State<PerfilVer> {
     );
   }
 
-  ListTile _buildProfileInfoTile(IconData icon, String title, String subtitle) {
+  ListTile _buildProfileInfoTile(
+      IconData icon, String title, String subtitle, ThemeData theme) {
     return ListTile(
-      leading: Icon(icon, color: Colors.deepPurple[300]),
-      title: Text(title),
-      subtitle: Text(subtitle),
+      leading: Icon(icon, color: theme.colorScheme.primary),
+      title:
+          Text(title, style: TextStyle(color: theme.colorScheme.onBackground)),
+      subtitle:
+          Text(subtitle, style: TextStyle(color: theme.colorScheme.onSurface)),
       contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-      tileColor: Colors.deepPurple[50],
+      tileColor: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
     );
   }
 
-  ListTile _buildProfileActionTile(
-      BuildContext context, IconData icon, String title, Widget? page) {
+  ListTile _buildProfileActionTile(BuildContext context, IconData icon,
+      String title, Widget? page, ThemeData theme) {
     return ListTile(
-      leading: Icon(icon, color: Colors.deepPurple[300]),
-      title: Text(title),
-      trailing: Icon(Icons.arrow_forward, color: Colors.deepPurple[300]),
-      tileColor: Colors.deepPurple[50],
+      leading: Icon(icon, color: theme.colorScheme.primary),
+      title:
+          Text(title, style: TextStyle(color: theme.colorScheme.onBackground)),
+      trailing: Icon(Icons.arrow_forward, color: theme.colorScheme.primary),
+      tileColor: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -243,7 +266,8 @@ class _PerfilVerState extends State<PerfilVer> {
     );
   }
 
-  ListTile _buildLogoutTile(BuildContext context, AuthProvider authProvider) {
+  ListTile _buildLogoutTile(
+      BuildContext context, AuthProvider authProvider, ThemeData theme) {
     return ListTile(
       leading: Icon(Icons.exit_to_app, color: Colors.red),
       title: Text('Cerrar sesión', style: TextStyle(color: Colors.red)),
@@ -256,6 +280,26 @@ class _PerfilVerState extends State<PerfilVer> {
         authProvider.logout();
         Navigator.of(context).pushReplacementNamed('/login');
       },
+    );
+  }
+
+  ListTile _buildThemeSwitchTile(BuildContext context, ThemeData theme) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return ListTile(
+      leading: Icon(Icons.dark_mode, color: theme.colorScheme.primary),
+      title: Text('Modo oscuro',
+          style: TextStyle(color: theme.colorScheme.onSurface)),
+      trailing: Switch(
+        value: themeProvider.isDarkMode,
+        onChanged: (value) {
+          themeProvider.toggleTheme();
+        },
+        activeColor: theme.colorScheme.primary,
+      ),
+      tileColor: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
     );
   }
 }
