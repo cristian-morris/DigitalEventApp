@@ -30,37 +30,38 @@ class PaymentHistory {
     this.fechaExpiracion,
   });
 
-factory PaymentHistory.fromJson(Map<String, dynamic> json) {
-  return PaymentHistory(
-    pagoId: json['pago_id'] as int? ?? 0, // Manejo seguro para valores nulos
-    monto: json['monto'] as String? ?? '0.00', // Manejo seguro para valores nulos
-    fecha: json['fecha'] != null ? DateTime.tryParse(json['fecha']) : null,
-    tipoPagoId: json['tipo_pago_id'] as int?,
-    usuarioId: json['usuario_id'] as int?,
-    eventoId: json['evento_id'] as int? ?? 0, // Manejo seguro para valores nulos
-    fInicioEp: json['f_inicio_ep'] != null ? DateTime.tryParse(json['f_inicio_ep']) : null,
-    fFinEp: json['f_FIN_ep'] != null ? DateTime.tryParse(json['f_FIN_ep']) : null,
-    numeroTarjeta: json['numero_tarjeta'] as String?,
-    fechaExpiracion: json['fecha_expiracion'] != null ? DateTime.tryParse(json['fecha_expiracion']) : null,
-  );
+  factory PaymentHistory.fromJson(Map<String, dynamic> json) {
+    return PaymentHistory(
+      pagoId: json['pago_id'] as int? ?? 0,
+      monto: json['monto'] as String? ?? '0.00',
+      fecha: json['fecha'] != null ? DateTime.tryParse(json['fecha']) : null,
+      tipoPagoId: json['tipo_pago_id'] as int?,
+      usuarioId: json['usuario_id'] as int?,
+      eventoId: json['evento_id'] as int? ?? 0,
+      fInicioEp: json['f_inicio_ep'] != null
+          ? DateTime.tryParse(json['f_inicio_ep'])
+          : null,
+      fFinEp:
+          json['f_FIN_ep'] != null ? DateTime.tryParse(json['f_FIN_ep']) : null,
+      numeroTarjeta: json['numero_tarjeta'] as String?,
+      fechaExpiracion: json['fecha_expiracion'] != null
+          ? DateTime.tryParse(json['fecha_expiracion'])
+          : null,
+    );
+  }
 }
-
-}
-
 
 Future<List<PaymentHistory>> fetchPaymentHistory() async {
   try {
     final response = await http.get(
-      Uri.parse('https://api-digitalevent.onrender.com/api/pagos/historialpagos'),
+      Uri.parse(
+          'https://api-digitalevent.onrender.com/api/pagos/historialpagos'),
     );
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-    
       return data.map((json) => PaymentHistory.fromJson(json)).toList();
     } else {
-      // Imprimir el cuerpo de la respuesta en caso de error
-     
       throw Exception('Failed to load payment history');
     }
   } catch (e) {
@@ -68,7 +69,6 @@ Future<List<PaymentHistory>> fetchPaymentHistory() async {
     throw Exception('Failed to load payment history');
   }
 }
-
 
 class historialPago extends StatefulWidget {
   const historialPago({super.key});
@@ -109,7 +109,7 @@ class _historialPagoState extends State<historialPago> {
             Navigator.of(context).pop();
           },
         ),
-        backgroundColor: Color.fromARGB(255, 36, 36, 36),
+        backgroundColor: Colors.deepPurple,
       ),
       body: FutureBuilder<List<PaymentHistory>>(
         future: futurePaymentHistory,
@@ -126,17 +126,17 @@ class _historialPagoState extends State<historialPago> {
               itemBuilder: (context, index) {
                 var payment = snapshot.data![index];
                 return Card(
-                  color: Color.fromARGB(255, 110, 110, 110),
+                  color: Colors.deepPurple[400],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   margin: EdgeInsets.all(10.0),
+                  elevation: 8,
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 5.0),
                         Row(
                           children: [
                             Icon(
@@ -148,12 +148,12 @@ class _historialPagoState extends State<historialPago> {
                               'Monto: ${payment.monto} MXN',
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5.0),
+                        SizedBox(height: 10.0),
                         Row(
                           children: [
                             Icon(
@@ -163,71 +163,54 @@ class _historialPagoState extends State<historialPago> {
                             SizedBox(width: 8.0),
                             Text(
                               payment.fecha != null
-                            ?  'Fecha: ${formatDate(payment.fecha!)}'
-                            : "sin datos",
+                                  ? 'Fecha: ${formatDate(payment.fecha!)}'
+                                  : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5.0),
+                        SizedBox(height: 10.0),
                         Row(
                           children: [
                             FaIcon(
                               FontAwesomeIcons.solidCreditCard,
-                              color: Color(0xFFB197FC),
+                              color: Colors.purpleAccent,
                             ),
                             SizedBox(width: 8.0),
                             Text(
                               payment.tipoPagoId != null
-                             ? 'Tipo de Pago: ${payment.tipoPagoId}'
-                             : "sin datos",
+                                  ? 'Tipo de Pago: ${payment.tipoPagoId}'
+                                  : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5.0),
+                        SizedBox(height: 10.0),
                         Row(
                           children: [
                             FaIcon(
                               FontAwesomeIcons.solidUser,
-                              color: Color(0xFF74C0FC),
+                              color: Colors.purpleAccent,
                             ),
                             SizedBox(width: 8.0),
                             Text(
                               payment.usuarioId != null
-                             ? 'Usuario: ${payment.usuarioId}'
-                             : "sin datos",
+                                  ? 'Usuario: ${payment.usuarioId}'
+                                  : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5.0),
-                        Row(
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.calendarCheck,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text(
-                              'Evento: ${payment.eventoId}',
-                              style: GoogleFonts.openSans(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        if (payment.fInicioEp != null) SizedBox(height: 5.0),
+                        if (payment.fInicioEp != null) SizedBox(height: 10.0),
                         if (payment.fInicioEp != null)
                           Row(
                             children: [
@@ -235,16 +218,16 @@ class _historialPagoState extends State<historialPago> {
                               SizedBox(width: 8.0),
                               Text(
                                 payment.fInicioEp != null
-                               ? 'Fecha Inicio EP: ${formatDate(payment.fInicioEp!)}'
-                               : "sin datos",
+                                    ? 'Fecha Inicio EP: ${formatDate(payment.fInicioEp!)}'
+                                    : "sin datos",
                                 style: GoogleFonts.openSans(
                                     color: Colors.white,
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
-                        if (payment.fFinEp != null) SizedBox(height: 5.0),
+                        if (payment.fFinEp != null) SizedBox(height: 10.0),
                         if (payment.fFinEp != null)
                           Row(
                             children: [
@@ -252,46 +235,49 @@ class _historialPagoState extends State<historialPago> {
                               SizedBox(width: 8.0),
                               Text(
                                 payment.fFinEp != null
-                               ? 'Fecha Fin EP: ${formatDate(payment.fFinEp!)}'
-                               : "sin datos",
+                                    ? 'Fecha Fin EP: ${formatDate(payment.fFinEp!)}'
+                                    : "sin datos",
                                 style: GoogleFonts.openSans(
                                     color: Colors.white,
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
-                        SizedBox(height: 5.0),
+                        SizedBox(height: 10.0),
                         Row(
                           children: [
                             FaIcon(
                               FontAwesomeIcons.solidCreditCard,
-                              color: Color.fromARGB(255, 255, 213, 59),
+                              color: Colors.yellowAccent,
                             ),
                             SizedBox(width: 8.0),
                             Text(
                               payment.numeroTarjeta != null
-                            ?  'Número Tarjeta: ${payment.numeroTarjeta}'
-                            : "sin datos",
+                                  ? 'Número de Tarjeta: ${payment.numeroTarjeta}'
+                                  : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5.0),
+                        SizedBox(height: 10.0),
                         Row(
                           children: [
-                            FaIcon(FontAwesomeIcons.calendar),
+                            FaIcon(
+                              FontAwesomeIcons.calendarDay,
+                              color: Colors.yellowAccent,
+                            ),
                             SizedBox(width: 8.0),
                             Text(
                               payment.fechaExpiracion != null
-                             ? 'Fecha Expiración: ${formatDate(payment.fechaExpiracion!)}'
-                             : "sin datos",
+                                  ? 'Fecha Expiración: ${formatDate(payment.fechaExpiracion!)}'
+                                  : "sin datos",
                               style: GoogleFonts.openSans(
                                   color: Colors.white,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],

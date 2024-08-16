@@ -78,7 +78,7 @@ class EventDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          evento.nombreEvento,
+          evento.eventoNombre,
           style:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -87,7 +87,11 @@ class EventDetailPage extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.deepPurple, Colors.purple, Colors.purpleAccent],
+              colors: [
+                Colors.deepPurple,
+                Colors.purple,
+                Colors.purpleAccent,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -102,11 +106,23 @@ class EventDetailPage extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Image.network(evento.imagenUrl,
-                    height: 200, width: double.infinity, fit: BoxFit.cover),
+                child: Image.network(
+                  evento.imagenUrl ?? 'default_image_url',
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    return Image.asset(
+                      'assets/cancelar.png',
+                      height: 200,
+                      width: double.infinity,
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 16),
-              Text(evento.nombreEvento,
+              Text(evento.eventoNombre,
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -148,7 +164,7 @@ class EventDetailPage extends StatelessWidget {
                 children: [
                   const Icon(Icons.category, color: Colors.grey),
                   const SizedBox(width: 4),
-                  Text('Categoría: ${evento.categoriaNombre}',
+                  Text('Categoría: ${evento.categoria}',
                       style: TextStyle(color: Colors.grey[700])),
                 ],
               ),
@@ -162,14 +178,14 @@ class EventDetailPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.person, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text('Organizado por: ${evento.organizadorNombre}',
-                      style: TextStyle(color: Colors.grey[700])),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     const Icon(Icons.person, color: Colors.grey),
+              //     const SizedBox(width: 4),
+              //     Text('Organizado por: ${evento.organizadorNombre}',
+              //         style: TextStyle(color: Colors.grey[700])),
+              //   ],
+              // ),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -185,7 +201,7 @@ class EventDetailPage extends StatelessWidget {
                   const Icon(Icons.check_circle, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
-                      'Autorizado el: ${DateFormat('yyyy-MM-dd').format(evento.fechaAutorizacion)}',
+                      'Autorizado el: ${DateFormat('yyyy-MM-dd').format(evento.fechaAutorizacion ?? DateTime.now())}',
                       style: TextStyle(color: Colors.grey[700])),
                 ],
               ),

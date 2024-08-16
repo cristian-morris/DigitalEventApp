@@ -22,7 +22,7 @@ class _RecentEventPageState extends State<RecentEventPage> {
 
   Future<List<Evento>> _getEventos() async {
     var response = await http.get(
-      Uri.https('api-digitalevent.onrender.com', '/api/eventos/events'),
+      Uri.https('api-digitalevent.onrender.com', '/api/events/get/img'),
     );
     var jsonData = jsonDecode(response.body) as List<dynamic>;
 
@@ -98,10 +98,20 @@ class _RecentEventPageState extends State<RecentEventPage> {
                             Stack(
                               children: [
                                 Image.network(
-                                  eventos[index].imagenUrl,
+                                  eventos[index].imagenUrl ??
+                                      'default_image_url',
                                   height: 200,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (BuildContext context,
+                                      Object exception,
+                                      StackTrace? stackTrace) {
+                                    return Image.asset(
+                                      'assets/cancelar.png',
+                                      height: 200,
+                                      width: double.infinity,
+                                    );
+                                  },
                                 ),
                                 Positioned(
                                   bottom: 10,
@@ -116,7 +126,7 @@ class _RecentEventPageState extends State<RecentEventPage> {
                                       borderRadius: BorderRadius.circular(15.0),
                                     ),
                                     child: Text(
-                                      eventos[index].categoriaNombre,
+                                      eventos[index].categoria,
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
@@ -137,7 +147,7 @@ class _RecentEventPageState extends State<RecentEventPage> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                eventos[index].nombreEvento,
+                                eventos[index].eventoNombre,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,

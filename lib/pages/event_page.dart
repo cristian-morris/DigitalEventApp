@@ -8,7 +8,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 Future<List<Evento>> fetchEventos() async {
   final response = await http.get(
-      Uri.parse('https://api-digitalevent.onrender.com/api/eventos/events'));
+      Uri.parse('https://api-digitalevent.onrender.com/api/events/get/img'));
 
   if (response.statusCode == 200) {
     List jsonResponse = json.decode(response.body);
@@ -212,10 +212,18 @@ class EventoCard extends StatelessWidget {
               Stack(
                 children: [
                   Image.network(
-                    evento.imagenUrl,
+                    evento.imagenUrl ?? 'default_image_url',
                     height: 145,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (BuildContext context, Object exception,
+                        StackTrace? stackTrace) {
+                      return Image.asset(
+                        'assets/cancelar.png',
+                        height: 145,
+                        width: double.infinity,
+                      );
+                    },
                   ),
                   Positioned(
                     bottom: 20,
@@ -233,7 +241,7 @@ class EventoCard extends StatelessWidget {
                       child: FittedBox(
                         fit: BoxFit.contain,
                         child: Text(
-                          evento.categoriaNombre,
+                          evento.categoria,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 17,
@@ -255,7 +263,7 @@ class EventoCard extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  evento.nombreEvento,
+                  evento.eventoNombre,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),

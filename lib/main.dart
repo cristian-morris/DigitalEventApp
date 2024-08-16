@@ -46,14 +46,13 @@ class _MyAppState extends State<MyApp> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return ChangeNotifierProvider(
       create: (ctx) => AuthProvider(),
-      child: Consumer<AuthProvider>(
-        builder: (ctx, auth, _) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData.light(),
-          darkTheme: ThemeData.dark(),
-          themeMode:
-              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: _showSplash
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        home: Consumer<AuthProvider>(
+          builder: (ctx, auth, _) => _showSplash
               ? SplashScreen()
               : auth.isAuth
                   ? HomePage()
@@ -68,12 +67,12 @@ class _MyAppState extends State<MyApp> {
                         }
                       },
                     ),
-          routes: {
-            '/login': (ctx) => LoginPage(),
-            '/main': (ctx) => HomePage(),
-            '/register': (ctx) => Register(),
-          },
         ),
+        routes: {
+          '/login': (ctx) => LoginPage(),
+          '/main': (ctx) => HomePage(),
+          '/register': (ctx) => Register(),
+        },
       ),
     );
   }

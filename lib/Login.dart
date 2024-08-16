@@ -1,5 +1,5 @@
-import 'package:digitalevent/register.dart';
 import 'package:digitalevent/auth_provider.dart';
+import 'package:digitalevent/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -85,6 +85,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Provider.of<AuthProvider>(context, listen: false)
           .login(email, password);
+      Navigator.pushReplacementNamed(context, '/main');
     } catch (error) {
       _showCustomDialog(context, 'Error de autenticación',
           'El correo electrónico o la contraseña proporcionados no son válidos. Por favor, verifique sus credenciales e intente nuevamente.');
@@ -94,14 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final authProvider = Provider.of<AuthProvider>(context);
 
-    // Verificar si el usuario ya está autenticado y redirigir si es necesario
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authProvider.isAuth) {
-        Navigator.of(context).pushReplacementNamed('/main');
-      }
-    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
