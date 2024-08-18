@@ -1,3 +1,4 @@
+import 'package:digitalevent/ForgotPasswordPage.dart';
 import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/register.dart';
 import 'package:flutter/material.dart';
@@ -240,7 +241,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Lógica para restablecer la contraseña
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ForgotPasswordPage(),
+                              ),
+                            );
                           },
                           child: Text(
                             'Restablecer',
@@ -290,22 +296,21 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '¿No tienes cuenta?',
+                          '¿No tienes una cuenta?',
                           style: GoogleFonts.openSans(
                               fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                         TextButton(
                           onPressed: () {
-                            // Aquí puedes añadir la lógica que quieres ejecutar al presionar el botón
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Register(),
-                              ),
+                                  builder: (context) => Register()),
                             );
                           },
                           child: Text(
@@ -318,6 +323,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 15),
                   ],
                 ),
               ),
