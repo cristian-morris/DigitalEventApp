@@ -16,6 +16,20 @@ class _PerfilVerState extends State<PerfilVer> {
   double _scrollOffset = 0;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reloadUserData();
+    });
+  }
+
+  Future<void> _reloadUserData() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.tryAutoLogin();
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
@@ -31,10 +45,7 @@ class _PerfilVerState extends State<PerfilVer> {
                     colors: [
                       Colors.deepPurple,
                       Colors.purple,
-                      Colors.purpleAccent
-                      // theme.colorScheme.primary,
-                      // theme.colorScheme.secondary,
-                      // theme.colorScheme.tertiary,
+                      Colors.purpleAccent,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -74,15 +85,12 @@ class _PerfilVerState extends State<PerfilVer> {
                     Stack(
                       children: [
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
                                 Colors.deepPurple,
                                 Colors.purple,
-                                Colors.purpleAccent
-                                // theme.colorScheme.primary,
-                                // theme.colorScheme.secondary,
-                                // theme.colorScheme.tertiary,
+                                Colors.purpleAccent,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -149,7 +157,6 @@ class _PerfilVerState extends State<PerfilVer> {
                                         bottom: 0,
                                         child: GestureDetector(
                                           onTap: () async {
-                                            // Navegar a la página de edición de perfil
                                             await Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -157,8 +164,7 @@ class _PerfilVerState extends State<PerfilVer> {
                                                     EditarPerfil(),
                                               ),
                                             ).then((_) {
-                                              // Actualizar el estado cuando vuelvas de la página de edición
-                                              setState(() {});
+                                              _reloadUserData();
                                             });
                                           },
                                           child: Container(

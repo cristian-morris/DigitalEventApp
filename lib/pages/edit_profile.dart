@@ -16,7 +16,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
   String? _nombre;
   String? _apellido;
   String? _telefono;
-  XFile? _nuevaFotoPerfil;
+  XFile? _fotoPerfil;
 
   // Future<void> _actualizarPerfil(String userId, String token) async {
   //   try {
@@ -107,7 +107,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
       }
 
       // 2. Subir la imagen de perfil si se seleccionó una nueva
-      if (_nuevaFotoPerfil != null) {
+      if (_fotoPerfil != null) {
         final imageUploadUrl =
             'https://api-digitalevent.onrender.com/api/imagenes/upload/$userId';
         final request =
@@ -116,7 +116,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
 
         request.files.add(await http.MultipartFile.fromPath(
           'imagen',
-          _nuevaFotoPerfil!.path,
+          _fotoPerfil!.path,
         ));
 
         final imageResponse = await request.send();
@@ -172,7 +172,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                   final pickedFile =
                       await picker.pickImage(source: ImageSource.gallery);
                   setState(() {
-                    _nuevaFotoPerfil = pickedFile;
+                    _fotoPerfil = pickedFile;
                   });
                 },
                 child: Stack(
@@ -180,13 +180,12 @@ class _EditarPerfilState extends State<EditarPerfil> {
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundImage: _nuevaFotoPerfil != null
-                          ? FileImage(File(_nuevaFotoPerfil!.path))
+                      backgroundImage: _fotoPerfil != null
+                          ? FileImage(File(_fotoPerfil!.path))
                           : user?['fotoPerfil'] != null
                               ? NetworkImage(user?['fotoPerfil'])
                               : null,
-                      child: _nuevaFotoPerfil == null &&
-                              user?['fotoPerfil'] == null
+                      child: _fotoPerfil == null && user?['fotoPerfil'] == null
                           ? Icon(Icons.person, size: 60, color: Colors.grey)
                           : null,
                     ),

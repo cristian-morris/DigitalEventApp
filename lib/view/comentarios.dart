@@ -35,11 +35,17 @@ class _ComentariosSectionState extends State<ComentariosSection> {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
+      final fetchedComentarios =
+          data.map((json) => Comentario.fromJson(json)).toList();
+
+      for (Comentario comentario in fetchedComentarios) {
+        await _fetchUserProfile(comentario);
+      }
+
       setState(() {
-        comentarios = data.map((json) => Comentario.fromJson(json)).toList();
+        comentarios = fetchedComentarios;
       });
     } else {
-      // Handle error
       print('Error fetching comments');
     }
 
@@ -48,16 +54,27 @@ class _ComentariosSectionState extends State<ComentariosSection> {
     });
   }
 
+  Future<void> _fetchUserProfile(Comentario comentario) async {
+    final response = await http.get(Uri.parse(
+        'https://api-digitalevent.onrender.com/api/users/${comentario.usuarioId}'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      comentario.fotoPerfil = data['fotoPerfil'];
+    } else {
+      print('Error fetching user profile for user ${comentario.usuarioId}');
+    }
+  }
+
   Future<void> _addComentario(String comentario) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    // Verifica si el usuario está autenticado
     if (!authProvider.isAuth) {
       print('User not authenticated. Please log in again.');
       return;
     }
 
-    final userId = authProvider.user?['usuario_id']; // Obtén el ID del usuario
+    final userId = authProvider.user?['usuario_id'];
 
     if (userId == null) {
       print('User ID not found. Please log in again.');
@@ -105,13 +122,16 @@ class _ComentariosSectionState extends State<ComentariosSection> {
     if (response.statusCode == 200) {
       _fetchComentarios();
     } else {
-      // Handle error
       print('Error deleting comment');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userId = authProvider.user?['usuario_id'];
+    final userProfileImageUrl = authProvider.user?['fotoPerfil'];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -127,13 +147,69 @@ class _ComentariosSectionState extends State<ComentariosSection> {
             itemCount: comentarios.length,
             itemBuilder: (context, index) {
               final comentario = comentarios[index];
-              return ListTile(
-                title: Text(comentario.comentario),
-                subtitle: Text('Por ${comentario.usuarioNombre}'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteComentario(comentario.comentarioId),
-                ),
+              final isCurrentUser = comentario.usuarioId == userId;
+
+              return Row(
+                mainAxisAlignment: isCurrentUser
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
+                children: [
+                  if (!isCurrentUser) ...[
+                    CircleAvatar(
+                      backgroundImage: comentario.fotoPerfil != null
+                          ? NetworkImage(comentario.fotoPerfil!)
+                          : AssetImage('assets/default_profile.png')
+                              as ImageProvider,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isCurrentUser
+                          ? Colors.blueAccent.withOpacity(0.1)
+                          : Colors.grey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          comentario.usuarioNombre,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isCurrentUser
+                                ? Colors.blueAccent
+                                : Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(comentario.comentario),
+                        const SizedBox(height: 4),
+                        Text(
+                          DateFormat('dd/MM/yyyy HH:mm')
+                              .format(comentario.fecha),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isCurrentUser) ...[
+                    const SizedBox(width: 8),
+                    CircleAvatar(
+                      backgroundImage: userProfileImageUrl != null
+                          ? NetworkImage(userProfileImageUrl)
+                          : AssetImage('assets/cancelar.png'),
+                    ),
+                  ],
+                ],
               );
             },
           ),
@@ -164,6 +240,7 @@ class Comentario {
   final String comentario;
   final DateTime fecha;
   final String usuarioNombre;
+  String? fotoPerfil;
 
   Comentario({
     required this.comentarioId,
@@ -172,6 +249,7 @@ class Comentario {
     required this.comentario,
     required this.fecha,
     required this.usuarioNombre,
+    this.fotoPerfil,
   });
 
   factory Comentario.fromJson(Map<String, dynamic> json) {
