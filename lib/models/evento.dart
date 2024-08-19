@@ -16,6 +16,7 @@ class Evento {
   final String? monto;
   final String? formaEscenario;
   final String? descripcion;
+  // final List<Comentario> comentarios;
 
   Evento({
     required this.eventoId,
@@ -35,6 +36,7 @@ class Evento {
     this.monto,
     this.formaEscenario,
     this.descripcion,
+    // required this.comentarios,
   });
 
   factory Evento.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,37 @@ class Evento {
       monto: json['monto'],
       formaEscenario: json['forma_escenario'],
       descripcion: json['descripcion'],
+      // comentarios: (json['comentarios'] as List)
+      //     .map((data) => Comentario.fromJson(data))
+      //     .toList(),
     );
   }
 }
+
+// class Comentario {
+//   final int comentarioId;
+//   final int usuarioId;
+//   final int eventoId;
+//   final String comentario;
+//   final DateTime fecha;
+//   final String usuarioNombre;
+
+//   Comentario({
+//     required this.comentarioId,
+//     required this.usuarioId,
+//     required this.eventoId,
+//     required this.comentario,
+//     required this.fecha,
+//     required this.usuarioNombre,
+//   });
+
+//   factory Comentario.fromJson(Map<String, dynamic> json) {
+//     return Comentario(
+//         comentarioId: json['comentario_id'],
+//         usuarioId: json['usuario_id'],
+//         eventoId: json['evento_id'],
+//         comentario: json['comentario'],
+//         fecha: DateTime.parse(json['fecha']),
+//         usuarioNombre: json['usuario_nombre']);
+//   }
+// }

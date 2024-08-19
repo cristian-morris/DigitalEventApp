@@ -1,4 +1,5 @@
 import 'package:digitalevent/auth_provider.dart';
+import 'package:digitalevent/pages/edit_profile.dart';
 import 'package:digitalevent/pages/historial_pago.dart';
 import 'package:digitalevent/view/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -147,8 +148,18 @@ class _PerfilVerState extends State<PerfilVer> {
                                         right: 0,
                                         bottom: 0,
                                         child: GestureDetector(
-                                          onTap: () {
+                                          onTap: () async {
                                             // Navegar a la página de edición de perfil
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditarPerfil(),
+                                              ),
+                                            ).then((_) {
+                                              // Actualizar el estado cuando vuelvas de la página de edición
+                                              setState(() {});
+                                            });
                                           },
                                           child: Container(
                                             width: 30,

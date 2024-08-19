@@ -54,10 +54,6 @@ class _HomePageState extends State<HomePage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
@@ -73,7 +69,7 @@ class _HomePageState extends State<HomePage> {
             selectedIndex: _selectedIndex,
             rippleColor: Colors.white,
             hoverColor: Colors.white,
-            gap: 8,
+            gap: 3,
             activeColor: Colors.black,
             iconSize: 24,
             padding: EdgeInsets.all(16),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:digitalevent/models/evento.dart';
+import 'package:digitalevent/view/comentarios.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -178,15 +179,6 @@ class EventDetailPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              // Row(
-              //   children: [
-              //     const Icon(Icons.person, color: Colors.grey),
-              //     const SizedBox(width: 4),
-              //     Text('Organizado por: ${evento.organizadorNombre}',
-              //         style: TextStyle(color: Colors.grey[700])),
-              //   ],
-              // ),
-              const SizedBox(height: 8),
               Row(
                 children: [
                   const Icon(Icons.info, color: Colors.grey),
@@ -214,6 +206,26 @@ class EventDetailPage extends StatelessWidget {
                       style: TextStyle(color: Colors.grey[700])),
                 ],
               ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.event_seat, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(
+                      'Forma del Escenario: ${evento.formaEscenario ?? "No especificado"}',
+                      style: TextStyle(color: Colors.grey[700])),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: Colors.grey),
+              const SizedBox(height: 16),
+              const Text('Descripción del Evento',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(
+                evento.descripcion ?? "No hay descripción disponible",
+                style: TextStyle(color: Colors.grey[700]),
+              ),
               const SizedBox(height: 16),
               const Divider(color: Colors.grey),
               const SizedBox(height: 16),
@@ -229,7 +241,7 @@ class EventDetailPage extends StatelessWidget {
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
-                itemCount: 25,
+                itemCount: evento.maxPer,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
@@ -269,9 +281,9 @@ class EventDetailPage extends StatelessWidget {
               const Text('Precio del Evento',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              const Text(
-                '\$50.00 USD',
-                style: TextStyle(
+              Text(
+                evento.monto != null ? '\$${evento.monto}' : 'Gratis',
+                style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.deepPurple),
@@ -295,27 +307,6 @@ class EventDetailPage extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    //* No lo borren xd
-                    // child: ElevatedButton.icon(
-                    //   onPressed: () => makePayment(context),
-                    //   icon: const Icon(Icons.payment),
-                    //   label: const Text("Comprar Boleto"),
-                    //   style: ElevatedButton.styleFrom(
-                    //     foregroundColor: Colors.white,
-                    //     backgroundColor: Colors.transparent,
-                    //     padding: const EdgeInsets.symmetric(
-                    //       horizontal: 50,
-                    //       vertical: 15,
-                    //     ),
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(10.0),
-                    //     ),
-                    //     textStyle: const TextStyle(
-                    //       fontSize: 18,
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //   ),
-                    // ),
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -343,6 +334,11 @@ class EventDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              const Divider(color: Colors.grey),
+              const SizedBox(height: 16),
+              // Añadir la sección de comentarios aquí
+              ComentariosSection(eventoId: evento.eventoId),
             ],
           ),
         ),

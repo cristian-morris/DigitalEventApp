@@ -1,5 +1,5 @@
-import 'package:digitalevent/ForgotPasswordPage.dart';
 import 'package:digitalevent/auth_provider.dart';
+import 'package:digitalevent/forgot_password_page.dart';
 import 'package:digitalevent/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -1,283 +1,281 @@
-// import 'package:digitalevent/pages/user.dart';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
-// import 'dart:io';
-// import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:digitalevent/auth_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-// class PerfilEditar extends StatefulWidget {
-//   final Usuario usuario;
+class EditarPerfil extends StatefulWidget {
+  @override
+  _EditarPerfilState createState() => _EditarPerfilState();
+}
 
-//   const PerfilEditar({super.key, required this.usuario});
+class _EditarPerfilState extends State<EditarPerfil> {
+  final _formKey = GlobalKey<FormState>();
+  String? _nombre;
+  String? _apellido;
+  String? _telefono;
+  XFile? _nuevaFotoPerfil;
 
-//   @override
-//   _PerfilEditarState createState() => _PerfilEditarState();
-// }
+  // Future<void> _actualizarPerfil(String userId, String token) async {
+  //   try {
+  //     // 1. Actualizar los datos del usuario
+  //     final url = 'https://api-digitalevent.onrender.com/api/users/$userId';
+  //     final response = await http.put(
+  //       Uri.parse(url),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $token',
+  //       },
+  //       body: jsonEncode({
+  //         'nombre': _nombre,
+  //         'last_name': _apellido,
+  //         'telefono': _telefono,
+  //       }),
+  //     );
 
-// class _PerfilEditarState extends State<PerfilEditar> {
-//   final _formKey = GlobalKey<FormState>();
-//   late String _nombre;
-//   late String _lastName;
-//   late String _email;
-//   late String _telefono;
-//   late String _fotoPerfil;
+  //     if (response.statusCode == 200) {
+  //       print('Datos del usuario actualizados correctamente');
 
-//   final ImagePicker _picker = ImagePicker();
-//   File? _imageFile;
+  //       // Actualizar el user en AuthProvider
+  //       final updatedUser = jsonDecode(response.body);
+  //       Provider.of<AuthProvider>(context, listen: false).setUser(updatedUser);
+  //     } else {
+  //       print(
+  //           'Error al actualizar los datos del usuario: ${response.statusCode}');
+  //     }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _nombre = widget.usuario.nombre;
-//     _lastName = widget.usuario.lastName;
-//     _email = widget.usuario.email;
-//     _telefono = widget.usuario.telefono;
-//     _fotoPerfil = widget.usuario.fotoPerfil;
-//   }
+  //     // 2. Subir la imagen de perfil si se seleccionó una nueva
+  //     if (_nuevaFotoPerfil != null) {
+  //       final imageUploadUrl =
+  //           'https://api-digitalevent.onrender.com/api/imagenes/upload/$userId';
+  //       final request =
+  //           http.MultipartRequest('POST', Uri.parse(imageUploadUrl));
+  //       request.headers['Authorization'] = 'Bearer $token';
 
-//   Future<void> _pickImage() async {
-//     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  //       request.files.add(await http.MultipartFile.fromPath(
+  //         'imagen',
+  //         _nuevaFotoPerfil!.path,
+  //       ));
 
-//     if (pickedFile != null) {
-//       setState(() {
-//         _imageFile = File(pickedFile.path);
-//         _fotoPerfil = pickedFile.path;
-//       });
-//     }
-//   }
+  //       final imageResponse = await request.send();
 
-//   Future<void> _actualizarUsuario() async {
-//     final response = await http.put(
-//       Uri.parse(
-//           'https://api-digitalevent.onrender.com/api/users/${widget.usuario.usuarioId}'),
-//       headers: <String, String>{
-//         'Content-Type': 'application/json; charset=UTF-8',
-//       },
-//       body: jsonEncode({
-//         'nombre': _nombre,
-//         'last_name': _lastName,
-//         'email': _email,
-//         'telefono': _telefono,
-//         'fotoPerfil': _fotoPerfil,
-//       }),
-//     );
+  //       if (imageResponse.statusCode == 200) {
+  //         print('Imagen de perfil subida correctamente');
+  //       } else {
+  //         print(
+  //             'Error al subir la imagen de perfil: ${imageResponse.statusCode}');
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print('Error al actualizar el perfil: $e');
+  //   }
+  // }
+  Future<void> _actualizarPerfil(String userId, String token) async {
+    try {
+      // 1. Actualizar los datos del usuario
+      final url = 'https://api-digitalevent.onrender.com/api/users/$userId';
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'nombre': _nombre,
+          'last_name': _apellido,
+          'telefono': _telefono,
+        }),
+      );
 
-//     if (response.statusCode == 200) {
-//       final data = json.decode(response.body);
-//       setState(() {
-//         widget.usuario.nombre = data['nombre'] ?? '';
-//         widget.usuario.lastName = data['last_name'] ?? '';
-//         widget.usuario.email = data['email'] ?? '';
-//         widget.usuario.telefono = data['telefono'] ?? '';
-//         widget.usuario.fotoPerfil = data['fotoPerfil'] ?? '';
-//       });
-//       Navigator.pop(context, true);
-//     } else {
-//       print('Failed to update user. Status code: ${response.statusCode}');
-//       print('Response body: ${response.body}');
-//       throw Exception('Failed to update user');
-//     }
-//   }
+      if (response.statusCode == 200) {
+        print('Datos del usuario actualizados correctamente');
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Colors.transparent,
-//         title: const Text(
-//           "Editar Perfil",
-//           style: TextStyle(
-//             color: Colors.white,
-//           ),
-//         ),
-//         iconTheme: const IconThemeData(color: Colors.white),
-//         flexibleSpace: Container(
-//           decoration: const BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [
-//                 Colors.deepPurple,
-//                 Colors.purple,
-//                 Colors.purpleAccent,
-//               ],
-//               begin: Alignment.topLeft,
-//               end: Alignment.bottomRight,
-//             ),
-//           ),
-//         ),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Form(
-//           key: _formKey,
-//           child: ListView(
-//             children: [
-//               Center(
-//                 child: Stack(
-//                   children: [
-//                     CircleAvatar(
-//                       radius: 50.0,
-//                       backgroundImage: _imageFile != null
-//                           ? FileImage(_imageFile!)
-//                           : (_fotoPerfil.isNotEmpty &&
-//                                   Uri.tryParse(_fotoPerfil)?.hasAbsolutePath ==
-//                                       true)
-//                               ? NetworkImage(_fotoPerfil)
-//                               : AssetImage('assets/images/R.png')
-//                                   as ImageProvider,
-//                       backgroundColor: Colors.grey,
-//                     ),
-//                     Positioned(
-//                       bottom: 0,
-//                       right: 0,
-//                       child: GestureDetector(
-//                         onTap: _pickImage,
-//                         child: Container(
-//                           width: 30,
-//                           height: 30,
-//                           decoration: BoxDecoration(
-//                             color: Colors.white,
-//                             shape: BoxShape.circle,
-//                             border: Border.all(
-//                               color: Colors.black,
-//                               width: 1.5,
-//                             ),
-//                           ),
-//                           child: Icon(
-//                             Icons.camera_alt_outlined,
-//                             size: 15,
-//                             color: Colors.black,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               SizedBox(height: 20.0),
-//               _buildTextFormField(
-//                 'Nombre',
-//                 _nombre,
-//                 (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Por favor, introduce un nombre';
-//                   }
-//                   return null;
-//                 },
-//                 (value) {
-//                   _nombre = value;
-//                 },
-//               ),
-//               SizedBox(height: 15.0),
-//               _buildTextFormField(
-//                 'Apellido',
-//                 _lastName,
-//                 (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Por favor, introduce un apellido';
-//                   }
-//                   return null;
-//                 },
-//                 (value) {
-//                   _lastName = value;
-//                 },
-//               ),
-//               SizedBox(height: 15.0),
-//               _buildTextFormField(
-//                 'Correo Electrónico',
-//                 _email,
-//                 (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Por favor, introduce un correo electrónico';
-//                   }
-//                   return null;
-//                 },
-//                 (value) {
-//                   _email = value;
-//                 },
-//               ),
-//               SizedBox(height: 15.0),
-//               _buildTextFormField(
-//                 'Teléfono',
-//                 _telefono,
-//                 (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Por favor, introduce un número de teléfono';
-//                   }
-//                   return null;
-//                 },
-//                 (value) {
-//                   _telefono = value;
-//                 },
-//               ),
-//               SizedBox(height: 20.0),
-//               Center(
-//                 child: AnimatedContainer(
-//                   decoration: BoxDecoration(
-//                     gradient: const LinearGradient(
-//                       colors: [
-//                         Colors.purple,
-//                         Colors.deepPurple,
-//                         Colors.purpleAccent
-//                       ],
-//                       begin: Alignment.topLeft,
-//                       end: Alignment.bottomRight,
-//                     ),
-//                     borderRadius: BorderRadius.circular(10.0),
-//                   ),
-//                   duration: Duration(milliseconds: 300),
-//                   child: ElevatedButton(
-//                     onPressed: () {
-//                       if (_formKey.currentState!.validate()) {
-//                         _actualizarUsuario();
-//                       }
-//                     },
-//                     child: Text('Guardar Cambios',
-//                         style: TextStyle(color: Colors.white)),
-//                     style: ElevatedButton.styleFrom(
-//                       backgroundColor: Colors.transparent,
-//                       padding: EdgeInsets.symmetric(
-//                         horizontal: 18.0,
-//                         vertical: 15.0,
-//                       ),
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(8.0),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+        // Actualizar el user en AuthProvider
+        if (mounted) {
+          final updatedUser = jsonDecode(response.body);
+          Provider.of<AuthProvider>(context, listen: false)
+              .setUser(updatedUser);
 
-//   Widget _buildTextFormField(
-//     String label,
-//     String initialValue,
-//     String? Function(String?)? validator,
-//     void Function(String)? onChanged,
-//   ) {
-//     return TextFormField(
-//       initialValue: initialValue,
-//       decoration: InputDecoration(
-//         labelText: label,
-//         filled: true,
-//         fillColor: Colors.deepPurple[50],
-//         border: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(8.0),
-//         ),
-//         focusedBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(8.0),
-//           borderSide: BorderSide(
-//             color: Colors.deepPurple,
-//             width: 2.0,
-//           ),
-//         ),
-//       ),
-//       validator: validator,
-//       onChanged: onChanged,
-//     );
-//   }
-// }
+          // Actualizar el estado del widget
+          setState(() {});
+        }
+      } else {
+        print(
+            'Error al actualizar los datos del usuario: ${response.statusCode}');
+      }
+
+      // 2. Subir la imagen de perfil si se seleccionó una nueva
+      if (_nuevaFotoPerfil != null) {
+        final imageUploadUrl =
+            'https://api-digitalevent.onrender.com/api/imagenes/upload/$userId';
+        final request =
+            http.MultipartRequest('POST', Uri.parse(imageUploadUrl));
+        request.headers['Authorization'] = 'Bearer $token';
+
+        request.files.add(await http.MultipartFile.fromPath(
+          'imagen',
+          _nuevaFotoPerfil!.path,
+        ));
+
+        final imageResponse = await request.send();
+
+        if (imageResponse.statusCode == 200) {
+          print('Imagen de perfil subida correctamente');
+        } else {
+          print(
+              'Error al subir la imagen de perfil: ${imageResponse.statusCode}');
+        }
+      }
+    } catch (e) {
+      print('Error al actualizar el perfil: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+    final token = authProvider
+        .token; // Suponiendo que tienes el token disponible en AuthProvider
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purple, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          'Editar Perfil',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  final picker = ImagePicker();
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.gallery);
+                  setState(() {
+                    _nuevaFotoPerfil = pickedFile;
+                  });
+                },
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: _nuevaFotoPerfil != null
+                          ? FileImage(File(_nuevaFotoPerfil!.path))
+                          : user?['fotoPerfil'] != null
+                              ? NetworkImage(user?['fotoPerfil'])
+                              : null,
+                      child: _nuevaFotoPerfil == null &&
+                              user?['fotoPerfil'] == null
+                          ? Icon(Icons.person, size: 60, color: Colors.grey)
+                          : null,
+                    ),
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: theme.colorScheme.primary,
+                      child: Icon(
+                        Icons.camera_alt,
+                        size: 18,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 30),
+              _buildTextField(
+                label: 'Nombre',
+                initialValue: user?['nombre'],
+                icon: Icons.person,
+                onSaved: (value) => _nombre = value,
+              ),
+              SizedBox(height: 20),
+              _buildTextField(
+                label: 'Apellido',
+                initialValue: user?['last_name'],
+                icon: Icons.person_outline,
+                onSaved: (value) => _apellido = value,
+              ),
+              SizedBox(height: 20),
+              _buildTextField(
+                label: 'Teléfono',
+                initialValue: user?['telefono'],
+                icon: Icons.phone,
+                keyboardType: TextInputType.phone,
+                onSaved: (value) => _telefono = value,
+              ),
+              SizedBox(height: 40),
+              ElevatedButton.icon(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _actualizarPerfil(user!['usuario_id'].toString(), token!);
+                    Navigator.pop(context, true);
+                  }
+                },
+                icon: Icon(Icons.save),
+                label: Text('Guardar Cambios'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required String? initialValue,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    required Function(String?) onSaved,
+  }) {
+    return TextFormField(
+      initialValue: initialValue,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: Colors.grey[200],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+      ),
+      keyboardType: keyboardType,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor ingrese su $label';
+        }
+        return null;
+      },
+      onSaved: onSaved,
+    );
+  }
+}

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +16,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    final url = Uri.parse('https://api-digitalevent.onrender.com/api/auth/login');
+    final url =
+        Uri.parse('https://api-digitalevent.onrender.com/api/auth/login');
     try {
       final response = await http.post(
         url,
@@ -31,6 +33,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _token = responseData['token'];
         _user = responseData['user'];
+        print('User data: $_user');
         final prefs = await SharedPreferences.getInstance();
         prefs.setString('token', _token!);
         prefs.setString('user', json.encode(_user));
@@ -44,8 +47,10 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> register(String nombre, String email, String lastName, String password, String telefono) async {
-    final url = Uri.parse('https://api-digitalevent.onrender.com/api/users/register');
+  Future<void> register(String nombre, String email, String lastName,
+      String password, String telefono) async {
+    final url =
+        Uri.parse('https://api-digitalevent.onrender.com/api/users/register');
     try {
       final response = await http.post(
         url,
@@ -93,6 +98,13 @@ class AuthProvider with ChangeNotifier {
     if (prefs.containsKey('user')) {
       _user = json.decode(prefs.getString('user')!);
     }
+    notifyListeners();
+  }
+
+  // Es para actualizar los datos del usuario
+  // y luego llamarlo después de la actualización.
+  void setUser(Map<String, dynamic> user) {
+    _user = user;
     notifyListeners();
   }
 }

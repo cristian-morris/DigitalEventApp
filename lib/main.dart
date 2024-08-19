@@ -15,7 +15,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     // Mostrar el SplashScreen por 5 segundos.
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       setState(() {
         _showSplash = false;
       });
@@ -55,13 +55,13 @@ class _MyAppState extends State<MyApp> {
           builder: (ctx, auth, _) => _showSplash
               ? SplashScreen()
               : auth.isAuth
-                  ? HomePage()
+                  ? const HomePage()
                   : FutureBuilder(
                       future: auth.tryAutoLogin(),
                       builder: (ctx, authResultSnapshot) {
                         if (authResultSnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return WaitingScreen();
+                          return const WaitingScreen();
                         } else {
                           return LoginPage();
                         }
@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
         ),
         routes: {
           '/login': (ctx) => LoginPage(),
-          '/main': (ctx) => HomePage(),
+          '/main': (ctx) => const HomePage(),
           '/register': (ctx) => Register(),
         },
       ),
@@ -79,9 +79,11 @@ class _MyAppState extends State<MyApp> {
 }
 
 class WaitingScreen extends StatelessWidget {
+  const WaitingScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
       ),

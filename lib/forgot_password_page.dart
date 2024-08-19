@@ -73,7 +73,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return;
     }
 
-    final url = Uri.parse('https://api-digitalevent.onrender.com/api/password/forgot-password');
+    final url = Uri.parse(
+        'https://api-digitalevent.onrender.com/api/password/forgot-password');
 
     try {
       final response = await http.post(
