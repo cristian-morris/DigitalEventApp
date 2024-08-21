@@ -14,6 +14,14 @@ class AuthProvider with ChangeNotifier {
     return _token != null;
   }
 
+   int get userId {
+    // Asegúrate de que el usuario esté autenticado y de que el _user no sea null
+    if (_user != null && _user!.containsKey('usuario_id')) {
+      return _user!['usuario_id'];
+    }
+    throw Exception('User ID is not available');
+  }
+
   Future<void> login(String email, String password) async {
     final url =
         Uri.parse('https://api-digitalevent.onrender.com/api/auth/login');

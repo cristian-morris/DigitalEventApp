@@ -1,5 +1,6 @@
 import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/forgot_password_page.dart';
+import 'package:digitalevent/home_page.dart';
 import 'package:digitalevent/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -86,7 +87,10 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Provider.of<AuthProvider>(context, listen: false)
           .login(email, password);
-      Navigator.pushReplacementNamed(context, '/main');
+     Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => HomePage()),
+        (route) => false, // Elimina todas las rutas anteriores
+      );
     } catch (error) {
       _showCustomDialog(context, 'Error de autenticación',
           'El correo electrónico o la contraseña proporcionados no son válidos. Por favor, verifique sus credenciales e intente nuevamente.');

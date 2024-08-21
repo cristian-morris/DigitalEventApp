@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:digitalevent/auth_provider.dart';
 import 'package:digitalevent/models/evento.dart';
 import 'package:digitalevent/view/comentarios.dart';
 import 'package:flutter/foundation.dart';
@@ -6,20 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class EventDetailPage extends StatelessWidget {
   final Evento evento;
 
   EventDetailPage({required this.evento});
 
-  Future<String> createPaymentIntent(int amount, String currency) async {
+  Future<String> createPaymentIntent(int amount, String currency, String descripcion, int usuarioid, int eventoid) async {
     try {
       final body = jsonEncode({
         'amount': amount,
         'currency': currency,
+        'descripcion': descripcion,
+        'usuario_id': usuarioid,
+        'evento_id': eventoid,
       });
       final response = await http.post(
-        Uri.https('api-digitalevent.onrender.com', '/api/pagos/pago'),
+        Uri.https('api-digitalevent.onrender.com', '/api/pagos/pagar'),
         body: body,
         headers: {'Content-Type': 'application/json'},
       );
@@ -39,9 +44,13 @@ class EventDetailPage extends StatelessWidget {
     }
   }
 
+  
+
   Future<void> makePayment(BuildContext context) async {
     try {
-      final paymentIntentClientSecret = await createPaymentIntent(5000, 'USD');
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final userId = authProvider.userId;
+      final paymentIntentClientSecret = await createPaymentIntent(5000, 'USD', evento.eventoNombre, userId, evento.eventoId);
 
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
