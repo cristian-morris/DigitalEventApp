@@ -1,4 +1,5 @@
 import 'package:digitalevent/auth_provider.dart';
+import 'package:digitalevent/models/comentario.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -126,6 +127,34 @@ class _ComentariosSectionState extends State<ComentariosSection> {
     }
   }
 
+  void _showDeleteConfirmationDialog(int comentarioId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Eliminar comentario'),
+          content: const Text(
+              '¿Estás seguro de que quieres eliminar este comentario?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar'),
+              onPressed: () {
+                _deleteComentario(comentarioId);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -149,67 +178,72 @@ class _ComentariosSectionState extends State<ComentariosSection> {
               final comentario = comentarios[index];
               final isCurrentUser = comentario.usuarioId == userId;
 
-              return Row(
-                mainAxisAlignment: isCurrentUser
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-                children: [
-                  if (!isCurrentUser) ...[
-                    CircleAvatar(
-                      backgroundImage: comentario.fotoPerfil != null
-                          ? NetworkImage(comentario.fotoPerfil!)
-                          : AssetImage('assets/default_profile.png')
-                              as ImageProvider,
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isCurrentUser
-                          ? Colors.blueAccent.withOpacity(0.1)
-                          : Colors.grey.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          comentario.usuarioNombre,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isCurrentUser
-                                ? Colors.blueAccent
-                                : Colors.black,
-                          ),
+              return GestureDetector(
+                onLongPress: isCurrentUser
+                    ? () =>
+                        _showDeleteConfirmationDialog(comentario.comentarioId)
+                    : null,
+                child: Row(
+                    mainAxisAlignment: isCurrentUser
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      if (!isCurrentUser) ...[
+                        CircleAvatar(
+                          backgroundImage: comentario.fotoPerfil != null
+                              ? NetworkImage(comentario.fotoPerfil!)
+                              : AssetImage('assets/default_profile.png')
+                                  as ImageProvider,
                         ),
-                        const SizedBox(height: 4),
-                        Text(comentario.comentario),
-                        const SizedBox(height: 4),
-                        Text(
-                          DateFormat('dd/MM/yyyy HH:mm')
-                              .format(comentario.fecha),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
+                        const SizedBox(width: 8),
                       ],
-                    ),
-                  ),
-                  if (isCurrentUser) ...[
-                    const SizedBox(width: 8),
-                    CircleAvatar(
-                      backgroundImage: userProfileImageUrl != null
-                          ? NetworkImage(userProfileImageUrl)
-                          : AssetImage('assets/cancelar.png'),
-                    ),
-                  ],
-                ],
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isCurrentUser
+                              ? Colors.blueAccent.withOpacity(0.1)
+                              : Colors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              comentario.usuarioNombre,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isCurrentUser
+                                    ? Colors.blueAccent
+                                    : Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(comentario.comentario),
+                            const SizedBox(height: 4),
+                            Text(
+                              DateFormat('dd/MM/yyyy HH:mm')
+                                  .format(comentario.fecha),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isCurrentUser) ...[
+                        const SizedBox(width: 8),
+                        CircleAvatar(
+                          backgroundImage: userProfileImageUrl != null
+                              ? NetworkImage(userProfileImageUrl)
+                              : AssetImage('assets/cancelar.png'),
+                        ),
+                      ]
+                    ]),
               );
             },
           ),
@@ -229,37 +263,6 @@ class _ComentariosSectionState extends State<ComentariosSection> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class Comentario {
-  final int comentarioId;
-  final int usuarioId;
-  final int eventoId;
-  final String comentario;
-  final DateTime fecha;
-  final String usuarioNombre;
-  String? fotoPerfil;
-
-  Comentario({
-    required this.comentarioId,
-    required this.usuarioId,
-    required this.eventoId,
-    required this.comentario,
-    required this.fecha,
-    required this.usuarioNombre,
-    this.fotoPerfil,
-  });
-
-  factory Comentario.fromJson(Map<String, dynamic> json) {
-    return Comentario(
-      comentarioId: json['comentario_id'],
-      usuarioId: json['usuario_id'],
-      eventoId: json['evento_id'],
-      comentario: json['comentario'],
-      fecha: DateTime.parse(json['fecha']),
-      usuarioNombre: json['usuario_nombre'],
     );
   }
 }

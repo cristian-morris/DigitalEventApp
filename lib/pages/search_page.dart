@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:digitalevent/models/evento.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'event_detail_page.dart';
+import 'package:digitalevent/models/evento.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -14,8 +14,17 @@ class _SearchPageState extends State<SearchPage> {
   List<Evento> _eventos = [];
   List<Evento> _filteredEventos = [];
   bool _isLoading = false;
-  List<String> _caracteristicas = ['Tecnología', 'Ciencia', 'Arte'];
+  List<String> _caracteristicas = [
+    'Tecnología',
+    'Deportes',
+    'Entretenimiento',
+    'Educación'
+  ];
+  List<String> _tiposEvento = ['Publico', 'Privado'];
   String? _selectedCaracteristica;
+  String? _selectedTipo;
+  RangeValues _priceRange = RangeValues(0, 1000);
+  DateTimeRange? _selectedDateRange;
 
   @override
   void initState() {
@@ -49,31 +58,152 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void _filterEventos(String query) {
+  void _applyFilter({
+    String? caracteristica,
+    String? tipoEvento,
+    RangeValues? priceRange,
+  }) {
     List<Evento> filteredEventos = _eventos.where((event) {
-      return event.eventoNombre.toLowerCase().contains(query.toLowerCase()) &&
-          (_selectedCaracteristica == null ||
-              event.categoria == _selectedCaracteristica);
-    }).toList();
+      final matchesNombre = _searchController.text.isEmpty ||
+          event.eventoNombre
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase());
+      final matchesCategoria =
+          caracteristica == null || event.categoria == caracteristica;
+      final matchesTipoEvento =
+          tipoEvento == null || event.tipoEvento == tipoEvento;
+      final matchesMonto = priceRange == null ||
+          (event.monto != null &&
+              double.tryParse(event.monto!) != null &&
+              double.parse(event.monto!) >= priceRange.start &&
+              double.parse(event.monto!) <= priceRange.end);
 
-    setState(() {
-      _filteredEventos = filteredEventos;
-    });
-  }
-
-  void _applyFilter(String? caracteristica) {
-    List<Evento> filteredEventos = _eventos.where((event) {
-      return (_searchController.text.isEmpty ||
-              event.eventoNombre
-                  .toLowerCase()
-                  .contains(_searchController.text.toLowerCase())) &&
-          (caracteristica == null || event.categoria == caracteristica);
+      return matchesNombre &&
+          matchesCategoria &&
+          matchesTipoEvento &&
+          matchesMonto;
     }).toList();
 
     setState(() {
       _selectedCaracteristica = caracteristica;
+      _selectedTipo = tipoEvento;
       _filteredEventos = filteredEventos;
+      _priceRange = priceRange ?? _priceRange;
     });
+  }
+
+  void _openFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 20),
+              Text(
+                "Selecciona Características",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 4.0,
+                children: _caracteristicas.map((String caracteristica) {
+                  return ChoiceChip(
+                    label: Text(caracteristica),
+                    selected: _selectedCaracteristica == caracteristica,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedCaracteristica =
+                            selected ? caracteristica : null;
+                      });
+                      _applyFilter(
+                          caracteristica: selected ? caracteristica : null);
+                    },
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Selecciona Tipo de Evento",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 4.0,
+                children: _tiposEvento.map((String tipo) {
+                  return ChoiceChip(
+                    label: Text(tipo),
+                    selected: _selectedTipo == tipo,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedTipo = selected ? tipo : null;
+                      });
+                      _applyFilter(tipoEvento: selected ? tipo : null);
+                    },
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Selecciona Rango de Precio",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Wrap(
+                spacing: 8.0,
+                children: [
+                  ChoiceChip(
+                    label: Text('0 - 50'),
+                    selected: _priceRange.start == 0 && _priceRange.end == 50,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _priceRange = RangeValues(0, 50);
+                      });
+                      _applyFilter(priceRange: _priceRange);
+                    },
+                  ),
+                  ChoiceChip(
+                    label: Text('50 - 100'),
+                    selected: _priceRange.start == 50 && _priceRange.end == 100,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _priceRange = RangeValues(50, 100);
+                      });
+                      _applyFilter(priceRange: _priceRange);
+                    },
+                  ),
+                  ChoiceChip(
+                    label: Text('100 - 500'),
+                    selected:
+                        _priceRange.start == 100 && _priceRange.end == 500,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _priceRange = RangeValues(100, 500);
+                      });
+                      _applyFilter(priceRange: _priceRange);
+                    },
+                  ),
+                  ChoiceChip(
+                    label: Text('500 - 1000'),
+                    selected:
+                        _priceRange.start == 500 && _priceRange.end == 1000,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _priceRange = RangeValues(500, 1000);
+                      });
+                      _applyFilter(priceRange: _priceRange);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -85,7 +215,7 @@ class _SearchPageState extends State<SearchPage> {
           cursorWidth: 1,
           controller: _searchController,
           onChanged: (value) {
-            _filterEventos(value);
+            _applyFilter();
           },
           decoration: InputDecoration(
             hintText: 'Buscar eventos...',
@@ -110,23 +240,9 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
         actions: [
-          PopupMenuButton<String>(
+          IconButton(
             icon: Icon(Icons.filter_list, color: Colors.grey),
-            onSelected: _applyFilter,
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                  value: null,
-                  child: Text('Todas las características'),
-                ),
-                ..._caracteristicas.map((String caracteristica) {
-                  return PopupMenuItem<String>(
-                    value: caracteristica,
-                    child: Text(caracteristica),
-                  );
-                }).toList(),
-              ];
-            },
+            onPressed: _openFilterModal,
           ),
         ],
       ),
@@ -228,12 +344,13 @@ class _SearchPageState extends State<SearchPage> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 4.0),
                                 child: Row(
                                   children: [
                                     Icon(
@@ -246,36 +363,56 @@ class _SearchPageState extends State<SearchPage> {
                                       '${evento.fechaInicio.toLocal()}'
                                           .split(' ')[0],
                                       style: TextStyle(
-                                        color: Colors.grey,
                                         fontSize: 14,
+                                        color: Colors.grey,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 4.0),
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.location_on,
+                                      Icons.place,
                                       size: 16,
                                       color: Colors.grey,
                                     ),
                                     SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        evento.ubicacion,
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 14,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                                    Text(
+                                      evento.ubicacion,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
+                              if (evento.monto != null)
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 4.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.attach_money_outlined,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '${evento.monto}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                             ],
                           ),
                         ),
