@@ -24,7 +24,6 @@ class _SearchPageState extends State<SearchPage> {
   String? _selectedCaracteristica;
   String? _selectedTipo;
   RangeValues _priceRange = RangeValues(0, 1000);
-  DateTimeRange? _selectedDateRange;
 
   @override
   void initState() {
@@ -98,108 +97,113 @@ class _SearchPageState extends State<SearchPage> {
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 20),
-              Text(
-                "Selecciona Características",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Wrap(
-                spacing: 8.0,
-                runSpacing: 4.0,
-                children: _caracteristicas.map((String caracteristica) {
-                  return ChoiceChip(
-                    label: Text(caracteristica),
-                    selected: _selectedCaracteristica == caracteristica,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _selectedCaracteristica =
-                            selected ? caracteristica : null;
-                      });
-                      _applyFilter(
-                          caracteristica: selected ? caracteristica : null);
-                    },
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Selecciona Tipo de Evento",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Wrap(
-                spacing: 8.0,
-                runSpacing: 4.0,
-                children: _tiposEvento.map((String tipo) {
-                  return ChoiceChip(
-                    label: Text(tipo),
-                    selected: _selectedTipo == tipo,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _selectedTipo = selected ? tipo : null;
-                      });
-                      _applyFilter(tipoEvento: selected ? tipo : null);
-                    },
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Selecciona Rango de Precio",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Wrap(
-                spacing: 8.0,
-                children: [
-                  ChoiceChip(
-                    label: Text('0 - 50'),
-                    selected: _priceRange.start == 0 && _priceRange.end == 50,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _priceRange = RangeValues(0, 50);
-                      });
-                      _applyFilter(priceRange: _priceRange);
-                    },
-                  ),
-                  ChoiceChip(
-                    label: Text('50 - 100'),
-                    selected: _priceRange.start == 50 && _priceRange.end == 100,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _priceRange = RangeValues(50, 100);
-                      });
-                      _applyFilter(priceRange: _priceRange);
-                    },
-                  ),
-                  ChoiceChip(
-                    label: Text('100 - 500'),
-                    selected:
-                        _priceRange.start == 100 && _priceRange.end == 500,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _priceRange = RangeValues(100, 500);
-                      });
-                      _applyFilter(priceRange: _priceRange);
-                    },
-                  ),
-                  ChoiceChip(
-                    label: Text('500 - 1000'),
-                    selected:
-                        _priceRange.start == 500 && _priceRange.end == 1000,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _priceRange = RangeValues(500, 1000);
-                      });
-                      _applyFilter(priceRange: _priceRange);
-                    },
-                  ),
-                ],
-              ),
-            ],
+          child: Container(
+            width: 600,
+            height: 600,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  "Selecciona Características",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Wrap(
+                  spacing: 7.0,
+                  runSpacing: 4.0,
+                  children: _caracteristicas.map((String caracteristica) {
+                    return ChoiceChip(
+                      label: Text(caracteristica),
+                      selected: _selectedCaracteristica == caracteristica,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _selectedCaracteristica =
+                              selected ? caracteristica : null;
+                        });
+                        _applyFilter(
+                            caracteristica: selected ? caracteristica : null);
+                      },
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  "Selecciona Tipo de Evento",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Wrap(
+                  spacing: 7.0,
+                  runSpacing: 4.0,
+                  children: _tiposEvento.map((String tipo) {
+                    return ChoiceChip(
+                      label: Text(tipo),
+                      selected: _selectedTipo == tipo,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _selectedTipo = selected ? tipo : null;
+                        });
+                        _applyFilter(tipoEvento: selected ? tipo : null);
+                      },
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  "Selecciona Rango de Precio",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Wrap(
+                  spacing: 7.0,
+                  children: [
+                    ChoiceChip(
+                      label: Text('0 - 50'),
+                      selected: _priceRange.start == 0 && _priceRange.end == 50,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _priceRange = RangeValues(0, 50);
+                        });
+                        _applyFilter(priceRange: _priceRange);
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Text('50 - 100'),
+                      selected:
+                          _priceRange.start == 50 && _priceRange.end == 100,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _priceRange = RangeValues(50, 100);
+                        });
+                        _applyFilter(priceRange: _priceRange);
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Text('100 - 500'),
+                      selected:
+                          _priceRange.start == 100 && _priceRange.end == 500,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _priceRange = RangeValues(100, 500);
+                        });
+                        _applyFilter(priceRange: _priceRange);
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Text('500 - 1000'),
+                      selected:
+                          _priceRange.start == 500 && _priceRange.end == 1000,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _priceRange = RangeValues(500, 1000);
+                        });
+                        _applyFilter(priceRange: _priceRange);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
